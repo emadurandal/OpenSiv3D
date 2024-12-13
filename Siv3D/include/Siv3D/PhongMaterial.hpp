@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -18,7 +18,7 @@ namespace s3d
 {
 	struct PhongMaterial
 	{
-		ColorF amibientColor = ColorF{ 1.0 };
+		ColorF ambientColor = ColorF{ 1.0 };
 
 		ColorF diffuseColor = ColorF{ 1.0 };
 
@@ -34,7 +34,7 @@ namespace s3d
 		PhongMaterial() = default;
 
 		SIV3D_NODISCARD_CXX20
-		PhongMaterial(const ColorF& _diffuseColor, HasDiffuseTexture _hasDiffuseTexture = HasDiffuseTexture::No);
+		constexpr PhongMaterial(const ColorF& _diffuseColor, HasDiffuseTexture _hasDiffuseTexture = HasDiffuseTexture::No);
 
 		SIV3D_NODISCARD_CXX20
 		PhongMaterial(const Material& material, HasDiffuseTexture _hasDiffuseTexture = HasDiffuseTexture::No);
@@ -42,7 +42,7 @@ namespace s3d
 
 	struct PhongMaterialInternal
 	{
-		Float3 amibientColor = Float3{ 1.0f, 1.0f, 1.0f };
+		Float3 ambientColor = Float3{ 1.0f, 1.0f, 1.0f };
 		
 		uint32 hasDiffuseTexture = false;
 		

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -72,6 +72,11 @@ namespace s3d
 		// do nothing
 	}
 
+	void CRenderer2D_Null::addRectFrameTB(const FloatRect&, const float, const Float4&, const Float4&)
+	{
+		// do nothing
+	}
+
 	void CRenderer2D_Null::addCircle(const Float2&, const float, const Float4&, const Float4&)
 	{
 		// do nothing
@@ -88,6 +93,11 @@ namespace s3d
 	}
 
 	void CRenderer2D_Null::addCircleArc(const LineStyle&, const Float2&, const float, const float, const float, const float, const Float4&, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addCircleSegment(const Float2&, const float, const float, const float, const Float4&)
 	{
 		// do nothing
 	}
@@ -113,6 +123,21 @@ namespace s3d
 	}
 
 	void CRenderer2D_Null::addRoundRect(const FloatRect&, const float, const float, const float, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRect(const FloatRect&, float, float, float, const Float4&, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRectFrame(const RoundRect&, const RoundRect&, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRectFrame(const RoundRect&, const RoundRect&, const Float4&, const Float4&)
 	{
 		// do nothing
 	}
@@ -182,6 +207,21 @@ namespace s3d
 		// do nothing
 	}
 
+	void CRenderer2D_Null::addRectShadow(const FloatRect&, const float, const Float4&, bool)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addCircleShadow(const Circle&, const float, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRectShadow(const RoundRect&, const float, const Float4&, const bool)
+	{
+		// do nothing
+	}
+
 	void CRenderer2D_Null::addTexturedParticles(const Texture&, const Array<Particle2D>&,
 		ParticleSystem2DParameters::SizeOverLifeTimeFunc,
 		ParticleSystem2DParameters::ColorOverLifeTimeFunc)
@@ -247,7 +287,7 @@ namespace s3d
 
 	Rect CRenderer2D_Null::getScissorRect() const
 	{
-		return Rect{ 0 };
+		return Rect::Empty();
 	}
 
 	void CRenderer2D_Null::setViewport(const Optional<Rect>&)

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -80,7 +80,7 @@ namespace s3d
 		constexpr float determinant() const noexcept;
 
 		[[nodiscard]]
-		Mat3x3 inverse() const noexcept;
+		constexpr Mat3x3 inverse() const noexcept;
 
 		[[nodiscard]]
 		constexpr Float2 transformPoint(Point pos) const noexcept;
@@ -102,6 +102,15 @@ namespace s3d
 
 		[[nodiscard]]
 		static Mat3x3 Homography(const Quad& to);
+
+		[[nodiscard]]
+		static Mat3x3 Homography(const RectF& from, const RectF& to);
+
+		[[nodiscard]]
+		static Mat3x3 Homography(const RectF& from, const Quad& to);
+
+		[[nodiscard]]
+		static Mat3x3 Homography(const Quad& from, const RectF& to);
 
 		[[nodiscard]]
 		static Mat3x3 Homography(const Quad& from, const Quad& to);

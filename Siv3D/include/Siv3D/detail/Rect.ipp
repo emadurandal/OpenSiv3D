@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -236,55 +236,55 @@ namespace s3d
 
 	inline constexpr Rect& Rect::setPos(const Arg::topCenter_<position_type> topCenter) noexcept
 	{
-		pos.set((topCenter->x - w / 2), topCenter->y);
+		pos.set((topCenter->x - size.x / 2), topCenter->y);
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::topRight_<position_type> topRight) noexcept
 	{
-		pos.set(topRight->x - w, topRight->y);
+		pos.set(topRight->x - size.x, topRight->y);
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::rightCenter_<position_type> rightCenter) noexcept
 	{
-		pos.set((rightCenter->x - w), (rightCenter->y - h / 2));
+		pos.set((rightCenter->x - size.x), (rightCenter->y - size.y / 2));
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::bottomRight_<position_type> bottomRight) noexcept
 	{
-		pos.set((bottomRight->x - w), (bottomRight->y - h));
+		pos.set((bottomRight->x - size.x), (bottomRight->y - size.y));
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::bottomCenter_<position_type> bottomCenter) noexcept
 	{
-		pos.set((bottomCenter->x - w / 2), (bottomCenter->y - h));
+		pos.set((bottomCenter->x - size.x / 2), (bottomCenter->y - size.y));
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::bottomLeft_<position_type> bottomLeft) noexcept
 	{
-		pos.set(bottomLeft->x, bottomLeft->y - h);
+		pos.set(bottomLeft->x, bottomLeft->y - size.y);
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setPos(const Arg::leftCenter_<position_type> leftCenter) noexcept
 	{
-		pos.set(leftCenter->x, (leftCenter->y - h / 2));
+		pos.set(leftCenter->x, (leftCenter->y - size.y / 2));
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setCenter(const value_type _x, const value_type _y) noexcept
 	{
-		pos.set((_x - w / 2), (_y - h / 2));
+		pos.set((_x - size.x / 2), (_y - size.y / 2));
 		return *this;
 	}
 
 	inline constexpr Rect& Rect::setCenter(const position_type _pos) noexcept
 	{
-		pos.set((_pos.x - w / 2), (_pos.y - h / 2));
+		pos.set((_pos.x - size.x / 2), (_pos.y - size.y / 2));
 		return *this;
 	}
 
@@ -586,39 +586,99 @@ namespace s3d
 		return{ (pos.x - left), (pos.y - top), (size.x + left + right), (size.y + top + bottom) };
 	}
 
+	inline constexpr Rect Rect::stretched(Arg::top_<value_type> top) const noexcept
+	{
+		return stretched(top.value(), 0, 0, 0);
+	}
+
+	inline constexpr Rect Rect::stretched(Arg::right_<value_type> right) const noexcept
+	{
+		return stretched(0, right.value(), 0, 0);
+	}
+
+	inline constexpr Rect Rect::stretched(Arg::bottom_<value_type> bottom) const noexcept
+	{
+		return stretched(0, 0, bottom.value(), 0);
+	}
+
+	inline constexpr Rect Rect::stretched(Arg::left_<value_type> left) const noexcept
+	{
+		return stretched(0, 0, 0, left.value());
+	}
+
 	inline constexpr RectF Rect::scaled(const double s) const noexcept
 	{
-		return{ Arg::center((x + w * 0.5), (y + h * 0.5)), (w * s), (h * s) };
+		return{ Arg::center((pos.x + size.x * 0.5), (pos.y + size.y * 0.5)), (size.x * s), (size.y * s) };
 	}
 
 	inline constexpr RectF Rect::scaled(const double sx, const double sy) const noexcept
 	{
-		return{ Arg::center((x + w * 0.5), (y + h * 0.5)), (w * sx), (h * sy) };
+		return{ Arg::center((pos.x + size.x * 0.5), (pos.y + size.y * 0.5)), (size.x * sx), (size.y * sy) };
 	}
 
 	inline constexpr RectF Rect::scaled(const Vec2 s) const noexcept
 	{
-		return{ Arg::center((x + w * 0.5), (y + h * 0.5)), (w * s.x), (h * s.y) };
+		return{ Arg::center((pos.x + size.x * 0.5), (pos.y + size.y * 0.5)), (size.x * s.x), (size.y * s.y) };
 	}
 
 	inline constexpr RectF Rect::scaledAt(const Vec2 _pos, const double s) const noexcept
 	{
-		return{ (_pos.x + (x - _pos.x) * s), (_pos.y + (y - _pos.y) * s), (w * s), (h * s) };
+		return{ (_pos.x + (pos.x - _pos.x) * s), (_pos.y + (pos.y - _pos.y) * s), (size.x * s), (size.y * s) };
 	}
 
 	inline constexpr RectF Rect::scaledAt(const Vec2 _pos, const double sx, const double sy) const noexcept
 	{
-		return{ (_pos.x + (x - _pos.x) * sx), (_pos.y + (y - _pos.y) * sy), (w * sx), (h * sy) };
+		return{ (_pos.x + (pos.x - _pos.x) * sx), (_pos.y + (pos.y - _pos.y) * sy), (size.x * sx), (size.y * sy) };
 	}
 
 	inline constexpr RectF Rect::scaledAt(const Vec2 _pos, const Vec2 s) const noexcept
 	{
-		return{ (_pos.x + (x - _pos.x) * s.x), (_pos.y + (y - _pos.y) * s.y), (w * s.x), (h * s.y) };
+		return{ (_pos.x + (pos.x - _pos.x) * s.x), (_pos.y + (pos.y - _pos.y) * s.y), (size.x * s.x), (size.y * s.y) };
+	}
+
+	inline constexpr Rect::operator bool() const noexcept
+	{
+		return hasArea();
+	}
+
+	inline constexpr bool Rect::isEmpty() const noexcept
+	{
+		return ((size.x == 0) || (size.y == 0));
 	}
 
 	inline constexpr bool Rect::hasArea() const noexcept
 	{
-		return ((w != 0) && (h != 0));
+		return ((size.x != 0) && (size.y != 0));
+	}
+
+	inline constexpr Rect::value_type Rect::leftX() const noexcept
+	{
+		return pos.x;
+	}
+
+	inline constexpr Rect::value_type Rect::rightX() const noexcept
+	{
+		return (pos.x + size.x);
+	}
+
+	inline constexpr Rect::value_type Rect::topY() const noexcept
+	{
+		return pos.y;
+	}
+
+	inline constexpr Rect::value_type Rect::bottomY() const noexcept
+	{
+		return (pos.y + size.y);
+	}
+
+	inline constexpr double Rect::centerX() const noexcept
+	{
+		return (pos.x + size.x * 0.5);
+	}
+
+	inline constexpr double Rect::centerY() const noexcept
+	{
+		return (pos.y + size.y * 0.5);
 	}
 
 	inline constexpr Rect::size_type Rect::tl() const noexcept
@@ -628,42 +688,47 @@ namespace s3d
 
 	inline constexpr Rect::size_type Rect::tr() const noexcept
 	{
-		return{ (x + w), y };
+		return{ (pos.x + size.x), pos.y };
 	}
 
 	inline constexpr Rect::size_type Rect::br() const noexcept
 	{
-		return{ (x + w), (y + h) };
+		return{ (pos.x + size.x), (pos.y + size.y) };
 	}
 
 	inline constexpr Rect::size_type Rect::bl() const noexcept
 	{
-		return{ x, (y + h) };
+		return{ pos.x, (pos.y + size.y) };
 	}
 
 	inline constexpr Vec2 Rect::topCenter() const noexcept
 	{
-		return{ (x + w * 0.5), y };
+		return{ (pos.x + size.x * 0.5), pos.y };
 	}
 
 	inline constexpr Vec2 Rect::rightCenter() const noexcept
 	{
-		return{ (x + w), (y + h * 0.5) };
+		return{ (pos.x + size.x), (pos.y + size.y * 0.5) };
 	}
 
 	inline constexpr Vec2 Rect::bottomCenter() const noexcept
 	{
-		return{ (x + w * 0.5), (y + h) };
+		return{ (pos.x + size.x * 0.5), (pos.y + size.y) };
 	}
 
 	inline constexpr Vec2 Rect::leftCenter() const noexcept
 	{
-		return{ x, (y + h * 0.5) };
+		return{ pos.x, (pos.y + size.y * 0.5) };
 	}
 
 	inline constexpr Vec2 Rect::center() const noexcept
 	{
-		return{ (x + w * 0.5), (y + h * 0.5) };
+		return{ (pos.x + size.x * 0.5), (pos.y + size.y * 0.5) };
+	}
+
+	inline constexpr Vec2 Rect::getRelativePoint(const double relativeX, const double relativeY) const noexcept
+	{
+		return{ (pos.x + size.x * relativeX), (pos.y + size.y * relativeY) };
 	}
 
 	inline constexpr Line Rect::top() const noexcept
@@ -752,22 +817,66 @@ namespace s3d
 
 	inline constexpr Rect::value_type Rect::area() const noexcept
 	{
-		return (w * h);
+		return (size.x * size.y);
 	}
 
 	inline constexpr Rect::value_type Rect::perimeter() const noexcept
 	{
-		return ((w + h) * 2);
+		return ((size.x + size.y) * 2);
+	}
+
+	template <class Type>
+	inline constexpr Type Rect::horizontalAspectRatio() const noexcept
+	{
+		if (size.y == 0)
+		{
+			return 0;
+		}
+
+		return (static_cast<Type>(size.x) / size.y);
+	}
+
+	inline constexpr Rect Rect::rotated90At(const position_type& _pos, const int32 n) const noexcept
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return { bl().rotate90At(_pos, 1),size.yx() }; // 1 回または -3 回
+		case 2:
+		case -2:
+			return { br().rotate90At(_pos, 2),size }; // 2 回または -2 回
+		case 3:
+		case -1:
+			return { tr().rotate90At(_pos, 3),size.yx() }; // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	inline constexpr Rect& Rect::rotate90At(const position_type& _pos, const int32 n) noexcept
+	{
+		return (*this = rotated90At(_pos, n));
 	}
 
 	inline constexpr Quad Rect::shearedX(const double vx) const noexcept
 	{
-		return{ {(x + vx), y}, {(x + w + vx), y}, {(x + w - vx), (y + h)}, {(x - vx), (y + h)} };
+		return{ {(pos.x + vx), pos.y}, {(pos.x + size.x + vx), pos.y}, {(pos.x + size.x - vx), (pos.y + size.y)}, {(pos.x - vx), (pos.y + size.y)} };
 	}
 
 	inline constexpr Quad Rect::shearedY(const double vy) const noexcept
 	{
-		return{ {x, (y - vy)}, {(x + w), (y + vy)}, {(x + w), (y + h + vy)}, {x, (y + h - vy)} };
+		return{ {pos.x, (pos.y - vy)}, {(pos.x + size.x), (pos.y + vy)}, {(pos.x + size.x), (pos.y + size.y + vy)}, {pos.x, (pos.y + size.y - vy)} };
+	}
+
+	inline Quad Rect::skewedX(const double angle) const noexcept
+	{
+		return shearedX(std::tan(angle) * size.y / 2);
+	}
+
+	inline Quad Rect::skewedY(const double angle) const noexcept
+	{
+		return shearedY(std::tan(angle) * size.x / 2);
 	}
 
 	inline constexpr RoundRect Rect::rounded(const double r) const noexcept
@@ -788,6 +897,30 @@ namespace s3d
 	inline constexpr RectF Rect::lerp(const RectF& other, const double f) const noexcept
 	{
 		return{ pos.lerp(other.pos, f), size.lerp(other.size, f) };
+	}
+
+	inline constexpr Rect Rect::getOverlap(const Rect& other) const noexcept
+	{
+		const auto ox = std::max(pos.x, other.pos.x);
+		const auto oy = std::max(pos.y, other.pos.y);
+		const auto ow = (std::min((pos.x + size.x), (other.pos.x + other.size.x)) - ox);
+
+		if (0 <= ow)
+		{
+			const auto oh = (std::min((pos.y + size.y), (other.pos.y + other.size.y)) - oy);
+
+			if (0 <= oh)
+			{
+				return{ ox, oy, ow, oh };
+			}
+		}
+
+		return Empty();
+	}
+
+	inline constexpr RectF Rect::getOverlap(const RectF& other) const noexcept
+	{
+		return other.getOverlap(*this);
 	}
 
 	inline size_t Rect::hash() const noexcept
@@ -811,6 +944,11 @@ namespace s3d
 	inline bool Rect::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	inline constexpr Rect Rect::Empty() noexcept
+	{
+		return{ 0, 0, 0, 0 };
 	}
 
 	inline constexpr Rect Rect::FromPoints(const position_type a, const position_type b) noexcept

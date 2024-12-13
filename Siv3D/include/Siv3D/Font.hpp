@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -14,24 +14,23 @@
 # include "String.hpp"
 # include "AssetHandle.hpp"
 # include "FontStyle.hpp"
-# include "GlyphInfo.hpp"
 # include "GlyphCluster.hpp"
-# include "OutlineGlyph.hpp"
-# include "PolygonGlyph.hpp"
-# include "MeshGlyph.hpp"
-# include "BitmapGlyph.hpp"
-# include "SDFGlyph.hpp"
-# include "MSDFGlyph.hpp"
 # include "FontMethod.hpp"
 # include "Typeface.hpp"
 # include "TextStyle.hpp"
 # include "Glyph.hpp"
-# include "PixelShader.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
+	struct OutlineGlyph;
+	struct PolygonGlyph;
+	struct MeshGlyph;
+	struct BitmapGlyph;
+	struct SDFGlyph;
+	struct MSDFGlyph;
 	struct DrawableText;
+	class PixelShader;
 
 	/// @brief フォント
 	class Font : public AssetHandle<Font>
@@ -62,7 +61,7 @@ namespace s3d
 		/// @param typeface フォントの種類
 		/// @param style フォントのスタイル
 		SIV3D_NODISCARD_CXX20
-		Font(int32 fontSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Default);
+		explicit Font(int32 fontSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Default);
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
@@ -92,7 +91,7 @@ namespace s3d
 		/// @brief デストラクタ
 		virtual ~Font();
 
-		/// @brief フォールバッグフォントを追加します。
+		/// @brief フォールバックフォントを追加します。
 		/// @param font フォールバックとして追加するフォント
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addFallback(const Font& font) const;
@@ -144,6 +143,12 @@ namespace s3d
 		/// @return フォントの高さ（ピクセル）
 		[[nodiscard]]
 		int32 height() const;
+
+		/// @brief 指定したフォントサイズでテキストを描画するときのフォントの高さ（ピクセル）を返します。
+		/// @param size 描画するフォントサイズ
+		/// @return フォントの高さ（ピクセル）
+		[[nodiscard]]
+		double height(double size) const;
 
 		/// @brief 半角スペースの幅（ピクセル）を返します。
 		/// @return 半角スペースの幅（ピクセル）
@@ -206,9 +211,10 @@ namespace s3d
 		/// @brief 文字列に対応するグリフクラスターを返します。
 		/// @param s 文字列
 		/// @param useFallback フォールバックフォントを使用するか
+		/// @param ligature リガチャ（合字）を有効にするか
 		/// @return 文字列に対応するグリフクラスター
 		[[nodiscard]]
-		Array<GlyphCluster> getGlyphClusters(StringView s, UseFallback useFallback = UseFallback::Yes) const;
+		Array<GlyphCluster> getGlyphClusters(StringView s, UseFallback useFallback = UseFallback::Yes, Ligature ligature = Ligature::Yes) const;
 
 		/// @brief 指定した文字のグリフ情報を返します。
 		/// @param ch 文字
@@ -254,9 +260,10 @@ namespace s3d
 		/// @brief 指定した文字列のすべての文字の輪郭グリフの配列を作成して返します。
 		/// @param s 文字列
 		/// @param closeRing 各輪郭の頂点配列について、末尾の頂点を先頭の頂点と一致させるか
+		/// @param ligature リガチャ（合字）を有効にするか
 		/// @return 文字の輪郭グリフの配列
 		[[nodiscard]]
-		Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No) const;
+		Array<OutlineGlyph> renderOutlines(StringView s, CloseRing closeRing = CloseRing::No, Ligature ligature = Ligature::Yes) const;
 
 		/// @brief 指定した文字のポリゴングリフを作成して返します。
 		/// @param ch 文字
@@ -279,9 +286,10 @@ namespace s3d
 
 		/// @brief 指定した文字列のすべての文字のポリゴングリフの配列を作成して返します。
 		/// @param s 文字列
+		/// @param ligature リガチャ（合字）を有効にするか
 		/// @return 文字のポリゴングリフの配列
 		[[nodiscard]]
-		Array<PolygonGlyph> renderPolygons(StringView s) const;
+		Array<PolygonGlyph> renderPolygons(StringView s, Ligature ligature = Ligature::Yes) const;
 
 		/// @brief 指定した文字のメッシュグリフを作成して返します。
 		/// @param ch 文字
@@ -308,9 +316,10 @@ namespace s3d
 		/// @brief 指定した文字列のすべての文字のメッシュグリフの配列を作成して返します。
 		/// @param s 文字列
 		/// @param size フォントのサイズ
-		/// @return 文字のポリゴングリフの配列		
+		/// @param ligature リガチャ（合字）を有効にするか
+		/// @return 文字のメッシュグリフの配列		
 		[[nodiscard]]
-		Array<MeshGlyph> createMeshes(StringView s, double size = 1.0) const;
+		Array<MeshGlyph> createMeshes(StringView s, double size = 1.0, Ligature ligature = Ligature::Yes) const;
 
 		/// @brief 指定した文字の Bitmap グリフを作成して返します。
 		/// @param ch 文字
@@ -416,9 +425,10 @@ namespace s3d
 
 		/// @brief 指定した文字列の描画用のグリフ配列を返します。
 		/// @param s 文字列
+		/// @param ligature リガチャ（合字）を有効にするか
 		/// @return 指定した文字列の描画用のグリフ配列
 		[[nodiscard]]
-		Array<Glyph> getGlyphs(StringView s) const;
+		Array<Glyph> getGlyphs(StringView s, Ligature ligature = Ligature::No) const;
 
 		/// @brief フォントを描画するために必要な DrawableText を、文字列から構築します。
 		/// @param text 文字列

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,7 @@
 
 # include <Siv3D/Dialog.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/FileSystem.hpp>
 # include <ThirdParty/nativefiledialog-extended/nfd.hpp>
 
 namespace s3d
@@ -95,7 +96,7 @@ namespace s3d
 			}
 		}
 
-		Optional<FilePath> SaveFile(const Array<FileFilter>& filters, const FilePathView defaultPath, const StringView)
+		Optional<FilePath> SaveFile(const Array<FileFilter>& filters, const FilePathView defaultPath, const StringView, const StringView)
 		{
 			if (not g_dialogInitialized)
 			{
@@ -143,7 +144,7 @@ namespace s3d
 
 			if (result == NFD_OKAY)
 			{
-				return Unicode::Widen(outPath.get());
+				return FileSystem::FullPath(Unicode::Widen(outPath.get()));
 			}
 			else
 			{

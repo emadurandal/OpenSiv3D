@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,16 +11,16 @@
 
 # pragma once
 # define SIV3D_SERIALIZE		siv3d_serialize
-# define SIV3D_SERIALIZE_LOAD	siv3d_serialize_save
-# define SIV3D_SERIALIZE_SAVE	siv3d_serialize_load
-# define SIV3D_SERIALIZE_LOAD_M	siv3d_serialize_save_minimal
-# define SIV3D_SERIALIZE_SAVE_M	siv3d_serialize_load_minimal
+# define SIV3D_SERIALIZE_LOAD	siv3d_serialize_load
+# define SIV3D_SERIALIZE_SAVE	siv3d_serialize_save
+# define SIV3D_SERIALIZE_LOAD_M	siv3d_serialize_load_minimal
+# define SIV3D_SERIALIZE_SAVE_M	siv3d_serialize_save_minimal
 
 # define CEREAL_SERIALIZE_FUNCTION_NAME		SIV3D_SERIALIZE
 # define CEREAL_LOAD_FUNCTION_NAME			SIV3D_SERIALIZE_LOAD
 # define CEREAL_SAVE_FUNCTION_NAME			SIV3D_SERIALIZE_SAVE
-# define CEREAL_SAVE_MINIMAL_FUNCTION_NAME	SIV3D_SERIALIZE_LOAD_M
-# define CEREAL_LOAD_MINIMAL_FUNCTION_NAME	SIV3D_SERIALIZE_SAVE_M
+# define CEREAL_LOAD_MINIMAL_FUNCTION_NAME	SIV3D_SERIALIZE_LOAD_M
+# define CEREAL_SAVE_MINIMAL_FUNCTION_NAME	SIV3D_SERIALIZE_SAVE_M
 
 # include "../ThirdParty/cereal/cereal.hpp"
 # include "../ThirdParty/cereal/archives/binary.hpp"
@@ -70,6 +70,9 @@ namespace s3d
 		[[nodiscard]]
 		std::shared_ptr<Writer> operator ->();
 
+		[[nodiscard]]
+		std::shared_ptr<const Writer> operator ->() const;
+
 	private:
 
 		std::shared_ptr<IWriter> m_writer;
@@ -92,6 +95,9 @@ namespace s3d
 		[[nodiscard]]
 		std::shared_ptr<Reader> operator ->();
 
+		[[nodiscard]]
+		std::shared_ptr<const Reader> operator ->() const;
+
 	private:
 
 		std::shared_ptr<IReader> m_reader;
@@ -104,6 +110,7 @@ CEREAL_REGISTER_ARCHIVE(s3d::Serializer<s3d::BinaryWriter>)
 CEREAL_REGISTER_ARCHIVE(s3d::Deserializer<s3d::BinaryReader>)
 CEREAL_REGISTER_ARCHIVE(s3d::Serializer<s3d::MemoryWriter>)
 CEREAL_REGISTER_ARCHIVE(s3d::Deserializer<s3d::MemoryReader>)
+CEREAL_REGISTER_ARCHIVE(s3d::Deserializer<s3d::MemoryViewReader>)
 
 CEREAL_SETUP_ARCHIVE_TRAITS(s3d::Deserializer<s3d::BinaryReader>, s3d::Serializer<s3d::BinaryWriter>)
 CEREAL_SETUP_ARCHIVE_TRAITS(s3d::Deserializer<s3d::MemoryReader>, s3d::Serializer<s3d::MemoryWriter>)

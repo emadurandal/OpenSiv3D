@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -52,7 +52,7 @@ namespace s3d
 
 		virtual GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) = 0;
 
-		virtual Array<GlyphCluster> getGlyphClusters(Font::IDType handleID, StringView s, bool recursive) = 0;
+		virtual Array<GlyphCluster> getGlyphClusters(Font::IDType handleID, StringView s, bool recursive, Ligature ligature) = 0;
 
 		virtual GlyphInfo getGlyphInfo(Font::IDType handleID, StringView ch) = 0;
 
@@ -62,13 +62,13 @@ namespace s3d
 
 		virtual OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing) = 0;
 
-		virtual Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing) = 0;
+		virtual Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing, Ligature ligature) = 0;
 
 		virtual PolygonGlyph renderPolygon(Font::IDType handleID, StringView ch) = 0;
 
 		virtual PolygonGlyph renderPolygonByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) = 0;
 
-		virtual Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s) = 0;
+		virtual Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s, Ligature ligature) = 0;
 
 		virtual BitmapGlyph renderBitmap(Font::IDType handleID, StringView s) = 0;
 
@@ -88,7 +88,7 @@ namespace s3d
 
 		virtual Glyph getGlyph(Font::IDType handleID, StringView ch) = 0;
 
-		virtual Array<Glyph> getGlyphs(Font::IDType handleID, StringView s) = 0;
+		virtual Array<Glyph> getGlyphs(Font::IDType handleID, StringView s, Ligature ligature) = 0;
 
 		virtual Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, double fontSize) = 0;
 
@@ -97,6 +97,8 @@ namespace s3d
 		virtual RectF regionBase(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, const Vec2& pos, double fontSize, double lineHeightScale) = 0;
 
 		virtual RectF draw(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, const Vec2& pos, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
+
+		virtual bool fits(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, const RectF& area, double fontSize, double lineHeightScale) = 0;
 
 		virtual bool draw(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, const RectF& area, double fontSize, const TextStyle& textStyle, const ColorF& color, double lineHeightScale) = 0;
 

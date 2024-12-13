@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -105,6 +105,30 @@ namespace s3d
 				|| (lhs.a != rhs.a);
 		}
 
+		/// @brief h 成分のみを変更した自身のコピーを返します。
+		/// @param _h h 成分
+		/// @return h 成分を変更したコピー
+		[[nodiscard]]
+		constexpr HSV withH(double _h) const noexcept;
+
+		/// @brief s 成分のみを変更した自身のコピーを返します。
+		/// @param _s s 成分
+		/// @return s 成分を変更したコピー
+		[[nodiscard]]
+		constexpr HSV withS(double _s) const noexcept;
+
+		/// @brief v 成分のみを変更した自身のコピーを返します。
+		/// @param _v v 成分
+		/// @return v 成分を変更したコピー
+		[[nodiscard]]
+		constexpr HSV withV(double _v) const noexcept;
+
+		/// @brief a 成分のみを変更した自身のコピーを返します。
+		/// @param _a a 成分
+		/// @return a 成分を変更したコピー
+		[[nodiscard]]
+		constexpr HSV withA(double _a) const noexcept;
+
 		constexpr HSV& setH(double _h) noexcept;
 
 		constexpr HSV& setS(double _s) noexcept;
@@ -175,17 +199,14 @@ namespace s3d
 		[[nodiscard]]
 		static constexpr HSV Zero() noexcept;
 
-		friend void Formatter(FormatData& formatData, const HSV& value)
-		{
-			Formatter(formatData, value.hsva());
-		}
+		friend void Formatter(FormatData& formatData, const HSV& value);
 	};
 
 	[[nodiscard]]
-	inline Color HueToColor(double hue) noexcept;
+	Color HueToColor(double hue) noexcept;
 
 	[[nodiscard]]
-	inline ColorF HueToColorF(double hue) noexcept;
+	ColorF HueToColorF(double hue) noexcept;
 }
 
 template <>

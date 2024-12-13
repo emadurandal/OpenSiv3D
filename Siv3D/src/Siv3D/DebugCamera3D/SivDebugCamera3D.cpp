@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,6 +12,7 @@
 # include <Siv3D/DebugCamera3D.hpp>
 # include <Siv3D/Keyboard.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Cursor.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/Interpolation.hpp>
 # include <Siv3D/Graphics3D.hpp>
@@ -262,7 +263,7 @@ namespace s3d
 		BasicCamera3D::setView(m_eyePosition, (m_eyePosition + focusVector), m_upDirection);
 	}
 
-	void DebugCamera3D::drawTouchUI(const Vec2& pos, const double scale)
+	void DebugCamera3D::drawTouchUI(const Vec2& pos, const double scale) const
 	{
 		const Transformer2D transformer{ Mat3x2::Scale(scale).translated(pos) };
 		constexpr Circle WButton{ 80, 32, 32 };
@@ -293,9 +294,9 @@ namespace s3d
 
 	void DebugCamera3D::setView(const Vec3& eyePosition, const Vec3& focusPosition, const Vec3& upDirection) noexcept
 	{
-		m_focusY = (focusPosition - eyePosition).normalized().y;
-		m_phi = std::atan2((focusPosition.z - eyePosition.z),
-			(focusPosition.x - eyePosition.x));
+		const auto focusVector = (focusPosition - eyePosition);
+		m_focusY = (focusVector.y / std::hypot(focusVector.x, focusVector.z));
+		m_phi = std::atan2(focusVector.z, focusVector.x);
 
 		BasicCamera3D::setView(eyePosition, focusPosition, upDirection);
 	}

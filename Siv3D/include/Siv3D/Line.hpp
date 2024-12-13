@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -132,9 +132,19 @@ namespace s3d
 		[[nodiscard]]
 		Line stretched(value_type lengthBegin, value_type lengthEnd) const noexcept;
 
+		/// @brief 始点から終点へ向かうベクトルを返します。
+		/// @return 始点から終点へ向かうベクトル
 		[[nodiscard]]
 		constexpr position_type vector() const noexcept;
 
+		/// @brief 始点から終点へ向かうベクトルを正規化して返します。
+		/// @return 始点から終点への単位方向ベクトル
+		[[nodiscard]]
+		position_type normalizedVector() const noexcept;
+
+		/// @brief 線分に対して垂直な単位法線ベクトルを返します。
+		/// @remark 線分の進行方向に対して左手側の法線を返します。
+		/// @return 線分に対して垂直な単位法線ベクトル
 		[[nodiscard]]
 		position_type normal() const noexcept;
 
@@ -143,12 +153,18 @@ namespace s3d
 
 		constexpr Line& reverse() noexcept;
 
+		/// @brief 線分が長さを持つかを返します。
+		/// @return 線分が長さを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool hasLength() const noexcept;
 
+		/// @brief 線分の長さを返します。
+		/// @return 線分の長さ
 		[[nodiscard]]
 		value_type length() const noexcept;
 
+		/// @brief 線分の長さの二乗を返します。
+		/// @return 線分の長さの二乗
 		[[nodiscard]]
 		constexpr value_type lengthSq() const noexcept;
 
@@ -164,6 +180,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr position_type position(double t) const noexcept;
 
+		/// @brief 線分の中心の座標を返します。
+		/// @return 線分の中心の座標
 		[[nodiscard]]
 		constexpr position_type center() const noexcept;
 
@@ -220,21 +238,58 @@ namespace s3d
 		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
 
 		
+		/// @brief 線分を描きます。
+		/// @param color 色
+		/// @return *this
 		const Line& draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 線分を描きます。
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& draw(const ColorF& colorBegin, const ColorF& colorEnd) const;
 
+		/// @brief 線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
 		const Line& draw(double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分を描きます。
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& draw(double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
+		/// @brief 線分を描きます。
+		/// @param style 線のスタイル
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @return *this
 		const Line& draw(const LineStyle& style, double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分を描きます。
+		/// @param style 線のスタイル
+		/// @param thickness 線分の太さ
+		/// @param colorBegin 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& draw(const LineStyle& style, double thickness, const ColorF& colorBegin, const ColorF& colorEnd) const;
 
-		const Line& drawArrow(double width = 1.0, const Vec2& headSize = Vec2{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @return *this
+		const Line& drawArrow(double width = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
 
-		const Line& drawDoubleHeadedArrow(double width = 1.0, const Vec2& headSize = Vec2{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
+		/// @brief 線分をもとに両方向矢印を描きます。
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @return *this
+		const Line& drawDoubleHeadedArrow(double width = 1.0, const SizeF& headSize = SizeF{ 5.0, 5.0 }, const ColorF& color = Palette::White) const;
 
 
 		template <class CharType>

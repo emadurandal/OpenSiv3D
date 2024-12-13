@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -45,8 +45,6 @@ namespace s3d
 	void Formatter(FormatData& formatData, unsigned long long value);
 
 	void Formatter(FormatData& formatData, float value);
-
-	void Formatter(FormatData& formatData, double value);
 
 	void Formatter(FormatData& formatData, long double value);
 
@@ -101,8 +99,8 @@ namespace s3d
 	template <class Type>
 	inline void Formatter(FormatData& formatData, const std::initializer_list<Type>& ilist);
 
-	template <class Fitrst, class Second>
-	inline void Formatter(FormatData& formatData, const std::pair<Fitrst, Second>& pair);
+	template <class First, class Second>
+	inline void Formatter(FormatData& formatData, const std::pair<First, Second>& pair);
 
 # if __cpp_lib_concepts
 	namespace Concept

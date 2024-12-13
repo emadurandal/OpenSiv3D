@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,6 +13,8 @@
 # include <cmath>
 # include "Common.hpp"
 # include "PointVector.hpp"
+# include "MathConstants.hpp"
+# include "PlaceHolder.hpp"
 
 namespace s3d
 {
@@ -242,21 +244,21 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		inline float Modf(float x, float& exp) noexcept;
+		inline float Modf(float x, float& ip) noexcept;
 
-		inline double Modf(double x, double& exp) noexcept;
+		inline double Modf(double x, double& ip) noexcept;
 
-		inline Float2 Modf(Float2 x, Float2& exp) noexcept;
+		inline Float2 Modf(Float2 x, Float2& ip) noexcept;
 
-		inline Float3 Modf(Float3 x, Float3& exp) noexcept;
+		inline Float3 Modf(Float3 x, Float3& ip) noexcept;
 
-		inline Float4 Modf(Float4 x, Float4& exp) noexcept;
+		inline Float4 Modf(Float4 x, Float4& ip) noexcept;
 
-		inline Vec2 Modf(Vec2 x, Vec2& exp) noexcept;
+		inline Vec2 Modf(Vec2 x, Vec2& ip) noexcept;
 
-		inline Vec3 Modf(Vec3 x, Vec3& exp) noexcept;
+		inline Vec3 Modf(Vec3 x, Vec3& ip) noexcept;
 
-		inline Vec4 Modf(Vec4 x, Vec4& exp) noexcept;
+		inline Vec4 Modf(Vec4 x, Vec4& ip) noexcept;
 
 		//////////////////////////////////////////////////
 		//
@@ -711,6 +713,72 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	Max
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		inline constexpr float Max(float x, float y) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Max(double x, double y) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Point Max(Point v1, Point v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float2 Max(Float2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float3 Max(Float3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float4 Max(Float4 v1, Float4 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec2 Max(Vec2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec3 Max(Vec3 v1, Vec3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec4 Max(Vec4 v1, Vec4 v2) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Min
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		inline constexpr float Min(float x, float y) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Min(double x, double y) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Point Min(Point v1, Point v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float2 Min(Float2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float3 Min(Float3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float4 Min(Float4 v1, Float4 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec2 Min(Vec2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec3 Min(Vec3 v1, Vec3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec4 Min(Vec4 v1, Vec4 v2) noexcept;
+
+		//////////////////////////////////////////////////
+		//
 		//	Clamp
 		//
 		//////////////////////////////////////////////////
@@ -1114,6 +1182,78 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	Dot
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		inline constexpr float Dot(Float2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Float2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr float Dot(Float3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Float3 v1, Vec3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec3 v1, Vec3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr float Dot(Float4 v1, Float4 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec4 v1, Float4 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Float4 v1, Vec4 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Dot(Vec4 v1, Vec4 v2) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Cross
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		inline constexpr float Cross(Float2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Cross(Float2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Cross(Vec2 v1, Float2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr double Cross(Vec2 v1, Vec2 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Float3 Cross(Float3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec3 Cross(Float3 v1, Vec3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec3 Cross(Vec3 v1, Float3 v2) noexcept;
+
+		[[nodiscard]]
+		inline constexpr Vec3 Cross(Vec3 v1, Vec3 v2) noexcept;
+
+		//////////////////////////////////////////////////
+		//
 		//	Normalize
 		//
 		//////////////////////////////////////////////////
@@ -1180,6 +1320,52 @@ namespace s3d
 
 		[[nodiscard]]
 		inline constexpr Vec4 Smoothstep(Vec4 v) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	ClampAngle
+		//
+		//////////////////////////////////////////////////
+
+		/// @brief 最小角と最大角の範囲にクランプした角度を返します。
+		/// @param angle クランプする角度（ラジアン）
+		/// @param min 範囲の最小角（ラジアン）
+		/// @param max 範囲の最大角（ラジアン）
+		/// @return クランプした角度（ラジアン）
+		/// @remark angle が min の方向と max の方向の間を指さない場合、より近いほうの角度を返します。
+		[[nodiscard]]
+		inline float ClampAngle(float angle, float min, float max) noexcept;
+
+		[[nodiscard]]
+		inline double ClampAngle(double angle, double min, double max) noexcept;
+
+		SIV3D_CONCEPT_ARITHMETIC
+		[[nodiscard]]
+		inline double ClampAngle(Arithmetic angle, Arithmetic min, Arithmetic max) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	NormalizeAngle
+		//
+		//////////////////////////////////////////////////
+
+		/// @brief 正規化した角度を返します。
+		/// @param radian 角度（ラジアン）
+		/// @param center 正規化の中心角度。Pi の場合の戻り値は [0, TwoPi), 0 の場合の戻り値は [-Pi, Pi)
+		/// @return 正規化した角度
+		[[nodiscard]]
+		inline float NormalizeAngle(float radian, float center = PiF) noexcept;
+
+		/// @brief 正規化した角度を返します。
+		/// @param radian 角度（ラジアン）
+		/// @param center 正規化の中心角度。Pi の場合の戻り値は [0, TwoPi), 0 の場合の戻り値は [-Pi, Pi)
+		/// @return 正規化した角度
+		[[nodiscard]]
+		inline double NormalizeAngle(double radian, double center = Pi) noexcept;
+
+		SIV3D_CONCEPT_ARITHMETIC
+		[[nodiscard]]
+		inline double NormalizeAngle(Arithmetic radian, double center = Pi) noexcept;
 
 		//////////////////////////////////////////////////
 		//

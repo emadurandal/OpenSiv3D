@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -176,15 +176,6 @@ namespace s3d
 		return DirectX::XMQuaternionSlerp(value, q, static_cast<float>(t));
 	}
 
-	inline std::pair<Float3, float> Quaternion::toAxisAngle() const noexcept
-	{
-		SIMD_Float4 axis;
-		float angle;
-		DirectX::XMQuaternionToAxisAngle(&axis.vec, &angle, value);
-
-		return{ axis.xyz(), angle };
-	}
-
 	inline Quaternion Quaternion::Identity() noexcept
 	{
 		return DirectX::XMQuaternionIdentity();
@@ -195,40 +186,15 @@ namespace s3d
 		return DirectX::XMVectorZero();
 	}
 
-	inline Quaternion Quaternion::FromUnitVectors(const Vec3& from, const Vec3& to) noexcept
-	{
-		Vec4 q;
-
-		if (const double r = (from.dot(to) + 1.0); 
-			(r < 0.0000001))
-		{
-			if (std::abs(from.z) < std::abs(from.x))
-			{
-				q.x = -from.y;
-				q.y = from.x;
-				q.z = 0.0;
-				q.w = 0.0;
-			}
-			else
-			{
-				q.x = 0.0;
-				q.y = -from.z;
-				q.z = from.y;
-				q.w = 0.0;
-			}
-		}
-		else
-		{
-			q = Vec4{ from.cross(to), r };
-		}
-
-		return Quaternion{ q.normalized() };
-	}
-
 	template <class X, class Y, class Z>
 	inline Quaternion Quaternion::RollPitchYaw(const X pitch, const Y yaw, const Z roll) noexcept
 	{
 		return DirectX::XMQuaternionRotationRollPitchYaw(static_cast<float>(pitch), static_cast<float>(yaw), static_cast<float>(roll));
+	}
+
+	inline Quaternion SIV3D_VECTOR_CALL RollPitchYaw(const Float3 pitchYawRoll) noexcept
+	{
+		return DirectX::XMQuaternionRotationRollPitchYaw(static_cast<float>(pitchYawRoll.x), static_cast<float>(pitchYawRoll.y), static_cast<float>(pitchYawRoll.z));
 	}
 
 	SIV3D_CONCEPT_ARITHMETIC_

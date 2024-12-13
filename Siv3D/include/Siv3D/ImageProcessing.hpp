@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -24,13 +24,20 @@ namespace s3d
 		/// @param height 元の画像の高さ（ピクセル）
 		/// @return 作成されるミップマップ画像の枚数
 		[[nodiscard]]
-		inline constexpr size_t CalculateMipCount(uint32 width, uint32 height) noexcept;
+		inline constexpr size_t CalculateMipCount(size_t width, size_t height) noexcept;
 
 		/// @brief 画像からミップマップ画像を作成します。
 		/// @param src 画像
 		/// @return ミップマップ画像
 		[[nodiscard]] 
 		Array<Image> GenerateMips(const Image& src);
+
+		/// @brief 画像からミップマップ画像を作成します。
+		/// @param src 画像
+		/// @param maxLevel ミップマップの最大個数（この値が 2 の場合、一辺の大きさが 1/2 と 1/4 のミップマップが生成される）
+		/// @return ミップマップ画像
+		[[nodiscard]]
+		Array<Image> GenerateMips(const Image& src, size_t maxLevel);
 
 		void Sobel(const Image& src, Image& dst, int32 dx = 1, int32 dy = 1, int32 apertureSize = 3);
 

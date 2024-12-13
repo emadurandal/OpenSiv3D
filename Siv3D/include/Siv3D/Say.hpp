@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -83,5 +83,6 @@ namespace s3d
 		};
 	}
 
+	/// @brief テキスト読み上げを行うオブジェクトです。`<<` で値を送ります。
 	inline constexpr auto Say = detail::Say_impl{};
 }

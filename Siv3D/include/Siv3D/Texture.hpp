@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -19,6 +19,12 @@
 # include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
 
+# if SIV3D_PLATFORM(WINDOWS)
+
+	struct ID3D11Texture2D;
+
+# endif
+
 namespace s3d
 {
 	struct TextureRegion;
@@ -26,7 +32,7 @@ namespace s3d
 	struct TexturedRoundRect;
 
 	/// @brief テクスチャ
-	/// @reamrk 描画できる画像です。
+	/// @remark 描画できる画像です。
 	class Texture : public AssetHandle<Texture>
 	{
 	public:
@@ -40,6 +46,9 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Texture(const Image& image, const Array<Image>& mipmaps, TextureDesc desc = TextureDesc::Mipped);
 
+		/// @brief 画像ファイルからテクスチャを作成します。
+		/// @param path ファイルパス
+		/// @param desc テクスチャの設定
 		SIV3D_NODISCARD_CXX20
 		explicit Texture(FilePathView path, TextureDesc desc = TextureDesc::Unmipped);
 
@@ -52,31 +61,55 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Texture(const Color& rgb, FilePathView alpha, TextureDesc desc = TextureDesc::Unmipped);
 
+		/// @brief 絵文字からテクスチャを作成します。
+		/// @param emoji 絵文字
+		/// @remark テクスチャのサイズは `Emoji::ImageSize` です。
+		/// @param desc テクスチャの設定
 		SIV3D_NODISCARD_CXX20
 		explicit Texture(const Emoji& emoji, TextureDesc desc = TextureDesc::Mipped);
 
+		/// @brief アイコンからテクスチャを作成します。
+		/// @param icon アイコン
+		/// @param size アイコンのサイズ
+		/// @param desc テクスチャの設定
 		SIV3D_NODISCARD_CXX20
 		explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Mipped);
 
 		virtual ~Texture();
 
+		/// @brief テクスチャの幅（ピクセル）を返します。
+		/// @return  テクスチャの幅（ピクセル）
 		[[nodiscard]]
 		int32 width() const;
 
+		/// @brief テクスチャの高さ（ピクセル）を返します。
+		/// @return  テクスチャの高さ（ピクセル）
 		[[nodiscard]]
 		int32 height() const;
 
+		/// @brief テクスチャの幅と高さ（ピクセル）を返します。
+		/// @return  テクスチャの幅と高さ（ピクセル）
 		[[nodiscard]]
 		Size size() const;
 
+		template <class Type = double>
+		[[nodiscard]]
+		Type horizontalAspectRatio() const noexcept;
+
+		/// @brief テクスチャの設定を返します。
+		/// @return テクスチャの設定
 		[[nodiscard]]
 		TextureDesc getDesc() const;
 
+		/// @brief テクスチャのフォーマットを返します。
+		/// @return テクスチャのフォーマット
 		[[nodiscard]]
 		TextureFormat getFormat() const;
 
+		/// @brief ミップマップを持つかを返します。
+		/// @return ミップマップを持つ場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isMipped() const;
+		bool hasMipMap() const;
 
 		[[nodiscard]]
 		bool srgbSampling() const;
@@ -84,6 +117,8 @@ namespace s3d
 		[[nodiscard]]
 		bool isSDF() const;
 
+		/// @brief デプスバッファを持っているかを返します。
+		/// @return デプスバッファを持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool hasDepth() const;
 
@@ -260,6 +295,13 @@ namespace s3d
 
 		void swap(Texture& other) noexcept;
 
+	# if SIV3D_PLATFORM(WINDOWS)
+
+		[[nodiscard]]
+		ID3D11Texture2D* getD3D11Texture2D();
+
+	# endif
+
 	protected:
 
 		struct Dynamic {};
@@ -275,22 +317,22 @@ namespace s3d
 		Texture(Dynamic, const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc);
 	
 		SIV3D_NODISCARD_CXX20
-		Texture(Render, const Size& size, const TextureFormat& format, HasDepth hasDepth);
+		Texture(Render, const Size& size, const TextureFormat& format, HasDepth hasDepth, HasMipMap hasMipMap);
 
 		SIV3D_NODISCARD_CXX20
-		Texture(Render, const Image& image, HasDepth hasDepth);
+		Texture(Render, const Image& image, HasDepth hasDepth, HasMipMap hasMipMap);
 
 		SIV3D_NODISCARD_CXX20
-		Texture(Render, const Grid<float>& image, HasDepth hasDepth);
+		Texture(Render, const Grid<float>& image, HasDepth hasDepth, HasMipMap hasMipMap);
 
 		SIV3D_NODISCARD_CXX20
-		Texture(Render, const Grid<Float2>& image, HasDepth hasDepth);
+		Texture(Render, const Grid<Float2>& image, HasDepth hasDepth, HasMipMap hasMipMap);
 
 		SIV3D_NODISCARD_CXX20
-		Texture(Render, const Grid<Float4>& image, HasDepth hasDepth);
+		Texture(Render, const Grid<Float4>& image, HasDepth hasDepth, HasMipMap hasMipMap);
 
 		SIV3D_NODISCARD_CXX20
-		Texture(MSRender, const Size& size, const TextureFormat& format, HasDepth hasDepth);
+		Texture(MSRender, const Size& size, const TextureFormat& format, HasDepth hasDepth, HasMipMap hasMipMap);
 	};
 }
 

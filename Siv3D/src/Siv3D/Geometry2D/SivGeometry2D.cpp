@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -560,7 +560,7 @@ namespace s3d
 		{
 			if (size == 0)
 			{
-				return Rect{ 0 };
+				return Rect::Empty();
 			}
 
 			const Point* it = points;
@@ -604,7 +604,7 @@ namespace s3d
 		{
 			if (size == 0)
 			{
-				return RectF{ 0 };
+				return RectF::Empty();
 			}
 
 			const PointType* it = points;
@@ -1031,7 +1031,7 @@ namespace s3d
 		}
 
 		//
-		// `Line::intersectsAt()` is based on
+		// `Intersect(const Line& a, const Line& b)` is based on
 		// https://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
 		//
 		// Licenced with the Code Project Open Licence (CPOL)
@@ -1045,40 +1045,54 @@ namespace s3d
 			const double rxs = r.x * s.y - r.y * s.x;
 			const double qpxr = qp.x * r.y - qp.y * r.x;
 			const double qpxs = qp.x * s.y - qp.y * s.x;
-			const bool rxsIsZero = detail::IsZero(rxs);
 
-			if (rxsIsZero && detail::IsZero(qpxr))
+			if (detail::IsZero(rxs))
 			{
-				const double qpr = qp.dot(r);
-				const double pqs = (a.begin - b.begin).dot(s);
-
-				if ((0 <= qpr && qpr <= r.dot(r)) || (0 <= pqs && pqs <= s.dot(s)))
+				if (detail::IsZero(qpxr) && detail::IsZero(qpxs))
 				{
-					// Two lines are overlapping			
-					return true;
+					const double qpr = qp.dot(r);
+					const double q2pr = (b.end - a.begin).dot(r);
+					const double pqs = (a.begin - b.begin).dot(s);
+					const double p2qs = (a.end - b.begin).dot(s);
+
+					const double rr = r.dot(r);
+					const bool rrIsZero = detail::IsZero(rr);
+					const double ss = s.dot(s);
+					const bool ssIsZero = detail::IsZero(ss);
+
+					if (rrIsZero && ssIsZero && detail::IsZero(qp.dot(qp)))
+					{
+						// The two lines are both zero length and in the same position
+						return true;
+					}
+
+					if (((not rrIsZero) && ((0 <= qpr && qpr <= rr) || (0 <= q2pr && q2pr <= rr)))
+						|| ((not ssIsZero) && ((0 <= pqs && pqs <= ss) || (0 <= p2qs && p2qs <= ss))))
+					{
+						// Two lines are overlapping
+						return true;
+					}
+
+					// Two lines are collinear but disjoint.
+					return false;
 				}
 
-				// Two lines are collinear but disjoint.
-				return false;
-			}
-
-			if (rxsIsZero && !detail::IsZero(qpxr))
-			{
 				// Two lines are parallel and non-intersecting.
 				return false;
 			}
-
-			const double t = qpxs / rxs;
-			const double u = qpxr / rxs;
-
-			if ((not rxsIsZero) && (0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+			else
 			{
-				// An intersection was found
-				return true;
-			}
+				const double t = qpxs / rxs;
+				const double u = qpxr / rxs;
+				if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+				{
+					// An intersection was found
+					return true;
+				}
 
-			// Two line segments are not parallel but do not intersect
-			return false;
+				// Two line segments are not parallel but do not intersect
+				return false;
+			}
 		}
 
 		bool Intersect(const Line& a, const Bezier2& b)
@@ -2068,40 +2082,73 @@ namespace s3d
 			const double rxs = r.x * s.y - r.y * s.x;
 			const double qpxr = qp.x * r.y - qp.y * r.x;
 			const double qpxs = qp.x * s.y - qp.y * s.x;
-			const bool rxsIsZero = detail::IsZero(rxs);
 
-			if (rxsIsZero && detail::IsZero(qpxr))
+			if (detail::IsZero(rxs))
 			{
-				const double qpr = qp.dot(r);
-				const double pqs = (a.begin - b.begin).dot(s);
-
-				if ((0 <= qpr && qpr <= r.dot(r)) || (0 <= pqs && pqs <= s.dot(s)))
+				if (detail::IsZero(qpxr) && detail::IsZero(qpxs))
 				{
-					// Two lines are overlapping			
-					return Array<Vec2>{};
+					const double qpr = qp.dot(r);
+					const double q2pr = (b.end - a.begin).dot(r);
+					const double pqs = (a.begin - b.begin).dot(s);
+					const double p2qs = (a.end - b.begin).dot(s);
+
+					const double rr = r.dot(r);
+					const bool rrIsZero = detail::IsZero(rr);
+					const double ss = s.dot(s);
+					const bool ssIsZero = detail::IsZero(ss);
+
+					if (rrIsZero && ssIsZero && detail::IsZero(qp.dot(qp)))
+					{
+						// The two lines are both zero length and in the same position
+						return Array<Vec2>{ a.begin };
+					}
+
+					if ((not rrIsZero) && ((0 <= qpr && qpr <= rr) || (0 <= q2pr && q2pr <= rr)))
+					{
+						// Two lines are overlapping
+						if (ssIsZero)
+						{
+							return Array<Vec2>{ b.begin };
+						}
+						else
+						{
+							return Array<Vec2>{};
+						}
+					}
+
+					if ((not ssIsZero) && ((0 <= pqs && pqs <= ss) || (0 <= p2qs && p2qs <= ss)))
+					{
+						// Two lines are overlapping
+						if (rrIsZero)
+						{
+							return Array<Vec2>{ a.begin };
+						}
+						else
+						{
+							return Array<Vec2>{};
+						}
+					}
+
+					// Two lines are collinear but disjoint.
+					return none;
 				}
 
-				// Two lines are collinear but disjoint.
-				return none;
-			}
-
-			if (rxsIsZero && !detail::IsZero(qpxr))
-			{
 				// Two lines are parallel and non-intersecting.
 				return none;
 			}
-
-			const double t = qpxs / rxs;
-			const double u = qpxr / rxs;
-
-			if ((not rxsIsZero) && (0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+			else
 			{
-				// An intersection was found
-				return Array<Vec2>{ (a.begin + t * r) };
-			}
+				const double t = qpxs / rxs;
+				const double u = qpxr / rxs;
+				if ((0.0 <= t && t <= 1.0) && (0.0 <= u && u <= 1.0))
+				{
+					// An intersection was found
+					return Array<Vec2>{ (a.begin + t * r) };
+				}
 
-			// Two line segments are not parallel but do not intersect
-			return none;
+				// Two line segments are not parallel but do not intersect
+				return none;
+			}
 		}
 
 		Optional<Array<Vec2>> IntersectAt(const Line& a, const Bezier2& b)
@@ -5233,6 +5280,70 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	SmallestEnclosingCircle
+		//
+		//////////////////////////////////////////////////
+	        //-----------------------------------------------
+	        //    Authors (OpenSiv3D challenge #19)
+	        //    - あぷりばーど
+	        //    - Nachia
+	        //    - Luke256
+	        //    - ラクラムシ
+	        //    - polyester
+	        //    - sasa
+	        //-----------------------------------------------
+
+		Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2)
+		{
+			// 三角形 (p0, p1, p2) に対して鈍角の存在を判定し、もしあればその対辺（最長辺）を弦とする円が最小の円となる。
+			if ((p1 - p0).dot(p2 - p0) <= 0.0)
+			{ 
+				return Circle{ p1, p2 };
+			}
+			
+			if ((p0 - p1).dot(p2 - p1) <= 0.0)
+			{
+				return Circle{ p0, p2 };
+			}
+
+			if ((p0 - p2).dot(p1 - p2) <= 0.0)
+			{
+				return Circle{ p0, p1 };
+			}
+			
+			// 鋭角三角形の場合は (p0, p1, p2) の外接円が最小となる。
+			return Triangle{ p0, p1, p2 }.getCircumscribedCircle();
+		}
+
+		Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance)
+		{
+			Circle circle = SmallestEnclosingCircle(p0, p1, p2);
+			
+			if (not detail::Contains(circle, p3, tolerance))
+			{
+				circle = SmallestEnclosingCircle(p0, p1, p3);
+				
+				if (not detail::Contains(circle, p2, tolerance))
+				{
+					circle = SmallestEnclosingCircle(p0, p2, p3);
+					
+					if (not detail::Contains(circle, p1, tolerance))
+					{
+						circle = SmallestEnclosingCircle(p1, p2, p3);
+					}
+				}
+			}
+
+			return circle;
+		}
+
+		Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance)
+		{
+			return SmallestEnclosingCircle(std::move(points), tolerance, GetDefaultRNG());
+		}
+
+		//////////////////////////////////////////////////
+		//
 		//	Subtract
 		//
 		//////////////////////////////////////////////////
@@ -5320,6 +5431,38 @@ namespace s3d
 			boost::geometry::union_(a._detail()->getPolygon(), b._detail()->getPolygon(), results);
 
 			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Or(const MultiPolygon& a, const Polygon& b)
+		{
+			boost::geometry::model::multi_polygon<CwOpenPolygon> polygons;
+
+			for (const auto& ap : a)
+			{
+				polygons.push_back(ap._detail()->getPolygon());
+			}
+
+			boost::geometry::model::multi_polygon<CwOpenPolygon> unitedPolygons;
+			boost::geometry::union_(polygons, b._detail()->getPolygon(), unitedPolygons);
+
+			MultiPolygon results;
+
+			for (const auto& unitedPolygon : unitedPolygons)
+			{
+				Array<Array<Vec2>> retHoles;
+
+				for (const auto& hole : unitedPolygon.inners())
+				{
+					retHoles.emplace_back(hole.begin(), hole.end());
+				}
+
+				if (Polygon::Validate(unitedPolygon.outer(), retHoles) == PolygonFailureType::OK)
+				{
+					results.emplace_back(unitedPolygon.outer(), retHoles);
+				}
+			}
+
+			return results;
 		}
 
 		//////////////////////////////////////////////////

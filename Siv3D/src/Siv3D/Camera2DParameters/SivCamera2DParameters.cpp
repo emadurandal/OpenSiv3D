@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -51,5 +51,25 @@ namespace s3d
 		}
 		
 		return params;
+	}
+
+	Camera2DParameters Camera2DParameters::Default()
+	{
+		return{};
+	}
+
+	Camera2DParameters Camera2DParameters::MouseOnly()
+	{
+		return Make(CameraControl::Mouse);
+	}
+
+	Camera2DParameters Camera2DParameters::KeyboardOnly()
+	{
+		return Make(CameraControl::Keyboard);
+	}
+
+	Camera2DParameters Camera2DParameters::NoControl()
+	{
+		return Make(CameraControl::None_);
 	}
 }

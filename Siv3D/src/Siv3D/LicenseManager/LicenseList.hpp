@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -19,8 +19,8 @@ const LicenseInfo licenses[] = {
 {
 UR"-(Siv3D Engine)-",
 
-UR"-(Copyright (c) 2008-2021 Ryo Suzuki
-Copyright (c) 2016-2021 OpenSiv3D Project)-",
+UR"-(Copyright (c) 2008-2023 Ryo Suzuki
+Copyright (c) 2016-2023 OpenSiv3D Project)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the “Software”), to deal
@@ -268,7 +268,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.)-"
 {
 UR"-(DirectXMath)-",
 
-UR"-(Copyright (c) 2011-2021 Microsoft Corp)-",
+UR"-(Copyright (c) 2011-2022 Microsoft Corp)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 software and associated documentation files (the "Software"), to deal in the Software 
@@ -418,9 +418,32 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)-"
 },
 
 {
+UR"-(fast_float)-",
+
+UR"-(Copyright (c) 2021 The fast_float authors)-",
+
+UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.)-"
+},
+
+{
 UR"-(fmt)-",
 
-UR"-(Copyright (c) 2012 - present, Victor Zverovich)-",
+UR"-(Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the “Software”), to deal
@@ -611,14 +634,14 @@ UR"-(HarfBuzz)-",
 
 UR"-(Copyright (c) 2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020  Google, Inc.
 Copyright (c) 2018,2019,2020  Ebrahim Byagowi
-Copyright (c) 2019,2020  Facebook, Inc. 
+Copyright (c) 2019,2020  Facebook, Inc.
 Copyright (c) 2012  Mozilla Foundation
 Copyright (c) 2011  Codethink Limited
 Copyright (c) 2008,2010  Nokia Corporation and/or its subsidiary(-ies)
 Copyright (c) 2009  Keith Stribley
 Copyright (c) 2009  Martin Hosken and SIL International
 Copyright (c) 2007  Chris Wilson
-Copyright (c) 2006  Behdad Esfahbod
+Copyright (c) 2005,2006,2020,2021  Behdad Esfahbod
 Copyright (c) 2005  David Turner
 Copyright (c) 2004,2007,2008,2009,2010  Red Hat, Inc.
 Copyright (c) 1998-2004  David Turner and Werner Lemberg)-",
@@ -759,6 +782,30 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.)-"
+},
+
+{
+UR"-(libmorton)-",
+
+UR"-(Copyright (c) 2016 Jeroen Baert)-",
+
+UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.)-"
 },
 
 {
@@ -931,6 +978,32 @@ be appreciated.)-"
 },
 
 {
+UR"-(libtiff)-",
+
+UR"-(Copyright (c) 1988-1997 Sam Leffler
+Copyright (c) 1991-1997 Silicon Graphics, Inc.)-",
+
+UR"-(Permission to use, copy, modify, distribute, and sell this software and 
+its documentation for any purpose is hereby granted without fee, provided
+that (i) the above copyright notices and this permission notice appear in
+all copies of the software and related documentation, and (ii) the names of
+Sam Leffler and Silicon Graphics may not be used in any advertising or
+publicity relating to the software without the specific, prior written
+permission of Sam Leffler and Silicon Graphics.
+
+THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+
+IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
+ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
+LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+OF THIS SOFTWARE.)-"
+},
+
+{
 UR"-(libvorbis)-",
 
 UR"-(Copyright (c) 2002-2020 Xiph.org Foundation)-",
@@ -961,32 +1034,6 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)-"
-},
-
-{
-UR"-(libtiff)-",
-
-UR"-(Copyright (c) 1988-1997 Sam Leffler
-Copyright (c) 1991-1997 Silicon Graphics, Inc.)-",
-
-UR"-(Permission to use, copy, modify, distribute, and sell this software and 
-its documentation for any purpose is hereby granted without fee, provided
-that (i) the above copyright notices and this permission notice appear in
-all copies of the software and related documentation, and (ii) the names of
-Sam Leffler and Silicon Graphics may not be used in any advertising or
-publicity relating to the software without the specific, prior written
-permission of Sam Leffler and Silicon Graphics.
-
-THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
-WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
-
-IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
-ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
-OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
-LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
-OF THIS SOFTWARE.)-"
 },
 
 {
@@ -1072,6 +1119,17 @@ SOFTWARE.)-"
 },
 
 {
+UR"-(Material Design)-",
+
+UR"-()-",
+
+UR"-(All web and desktop fonts are distributed under the Apache 2.0 license. Web
+and desktop fonts contain some icons that are redistributed under the Apache
+2.0 license. All other icons are either redistributed under their respective
+licenses or are distributed under the Apache 2.0 license.)-"
+},
+
+{
 UR"-(miniutf)-",
 
 UR"-(Copyright (c) 2013 Dropbox, Inc.)-",
@@ -1096,9 +1154,33 @@ THE SOFTWARE.)-"
 },
 
 {
+UR"-(Modern C++ JSON schema validator)-",
+
+UR"-(Copyright (c) 2016 Patrick Boettcher)-",
+
+UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.)-"
+},
+
+{
 UR"-(msdfgen)-",
 
-UR"-(Copyright (c) 2016 Viktor Chlumsky)-",
+UR"-(Copyright (c) 2016 - 2023 Viktor Chlumsky)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1154,7 +1236,7 @@ UR"-(nanoflann)-",
 
 UR"-(Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
 Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
-Copyright 2011-2016  Jose Luis Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
+Copyright 2011-2022  Jose Luis Blanco (joseluisblancoc@gmail.com). All rights reserved.)-",
 
 UR"-(Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -1181,7 +1263,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)-"
 {
 UR"-(nlohmann/json)-",
 
-UR"-(Copyright (c) 2013-2021 Niels Lohmann)-",
+UR"-(Copyright (c) 2013-2022 Niels Lohmann)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1200,6 +1282,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.)-"
+},
+
+{
+UR"-(Noto Emoji)-",
+
+UR"-()-",
+
+UR"-(Noto Emoji is licensed under the SIL Open Font License, Version 1.1.)-"
 },
 
 {
@@ -1302,6 +1392,56 @@ https://datatracker.ietf.org/ipr/1914/
 
 Broadcom Corporation:
 https://datatracker.ietf.org/ipr/1526/)-"
+},
+
+
+{
+UR"-(oscpack)-",
+
+UR"-(Copyright (c) 2004-2013 Ross Bencina <rossb@audiomulch.com>)-",
+
+UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.)-"
+},
+
+
+{
+UR"-(par_octasphere)-",
+
+UR"-(Copyright (c) 2019 Philip Rideout)-",
+
+UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.)-"
 },
 
 {
@@ -1496,7 +1636,7 @@ SOFTWARE.)-"
 {
 UR"-(RtAudio)-",
 
-UR"-(Copyright (c) 2001-2019 Gary P. Scavone)-",
+UR"-(Copyright (c) 2001-2021 Gary P. Scavone)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
@@ -1526,7 +1666,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.)-"
 {
 UR"-(scope-guard)-",
 
-UR"-(Copyright (c) 2017-2020 offa)-",
+UR"-(Copyright (c) 2017-2021 offa)-",
 
 UR"-(Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1656,6 +1796,40 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.)-"
+},
+
+{
+UR"-(Skia)-",
+
+UR"-(Copyright (c) 2011 Google Inc. All rights reserved.)-",
+
+UR"-(Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+  * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+
+  * Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)-"
 },
 
 {
@@ -1995,7 +2169,7 @@ misrepresented as being the original software.
 {
 UR"-(Zstandard)-",
 
-UR"-(Copyright (c) 2016-present, Facebook, Inc. All rights reserved.)-",
+UR"-(Copyright (c) Meta Platforms, Inc. and affiliates. All rights reserved.)-",
 
 UR"-(Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:

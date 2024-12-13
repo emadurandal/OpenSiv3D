@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -58,13 +58,23 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Optional(const Optional& other) = default;
 
+		SIV3D_NODISCARD_CXX20
+		Optional(Optional&& other) = default;
+
+		template <class U>
+		SIV3D_NODISCARD_CXX20
+		Optional(Optional<U>&& other) noexcept(std::is_nothrow_constructible_v<Type, U>);
+
 		Optional& operator =(None_t) noexcept;
 		
 		constexpr Optional& operator =(const Optional& other);
 		
 		constexpr Optional& operator =(Optional&& other) noexcept(std::is_nothrow_move_assignable_v<Type> && std::is_nothrow_move_constructible_v<Type>);
 
-		template <class U = Type>
+		template <class U = Type, std::enable_if_t<std::disjunction_v<
+			std::is_assignable<std::optional<Type>&, U>,
+			std::is_assignable<std::optional<Type>&, const U&>,
+			std::is_assignable<std::optional<Type>&, U&&>>>* = nullptr>
 		Optional& operator =(U&& value);
 
 		template <class U>
@@ -173,7 +183,7 @@ namespace s3d
 	[[nodiscard]]
 	inline constexpr bool operator >=(const Optional<Type1>& lhs, const Optional<Type2>& rhs);
 
-#if __cpp_impl_three_way_comparison && __cpp_lib_concepts
+#if __cpp_impl_three_way_comparison && __cpp_lib_concepts && !SIV3D_PLATFORM(MACOS) && !SIV3D_PLATFORM(WEB)
 	template <class Type1, std::three_way_comparable_with<Type1> Type2>
 	[[nodiscard]]
 	inline constexpr std::compare_three_way_result_t<Type1, Type2> operator <=>(const Optional<Type1>& lhs, const Optional<Type2>& rhs);
@@ -286,7 +296,7 @@ namespace s3d
 	[[nodiscard]]
 	inline constexpr bool operator >=(const U& value, const Optional<Type>& opt);
 
-#if __cpp_impl_three_way_comparison && __cpp_lib_concepts
+#if __cpp_impl_three_way_comparison && __cpp_lib_concepts && !SIV3D_PLATFORM(MACOS) && !SIV3D_PLATFORM(WEB)
 	namespace detail {
 		template <class T, template <class...> class Tmp>
 		inline constexpr bool is_specialization_v = false;
@@ -338,7 +348,7 @@ struct SIV3D_HIDDEN fmt::formatter<s3d::Optional<Type>, s3d::char32>
 
 		if (tag.empty())
 		{
-			return format_to(ctx.out(), sv);
+			return format_to(ctx.out(), U"{}", sv);
 		}
 		else
 		{

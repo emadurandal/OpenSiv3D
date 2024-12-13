@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,7 +11,6 @@
 
 # pragma once
 # include "Common.hpp"
-# include "FormatData.hpp"
 # include "FormatLiteral.hpp"
 # include "CommonFloat.hpp"
 # include "Hash.hpp"
@@ -26,6 +25,7 @@ namespace s3d
 	struct Circle;
 	struct Color;
 	class Image;
+	struct FormatData;
 
 	/// @brief 2 次元のベクトル（整数）
 	struct Point
@@ -65,9 +65,15 @@ namespace s3d
 		[[nodiscard]]
 		constexpr value_type elem(size_t index) const noexcept;
 
+		/// @brief x 成分へのポインタを返します。
+		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		value_type* getPointer() noexcept;
 
+		/// @brief x 成分へのポインタを返します。
+		/// @rematk 戻り値に対して [0] で x 成分、[1] で y 成分にアクセスできます。
+		/// @return x 成分へのポインタ
 		[[nodiscard]]
 		const value_type* getPointer() const noexcept;
 
@@ -139,6 +145,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point operator /(Point p) const noexcept;
 
+		[[nodiscard]]
+		constexpr Point operator %(int32 s) const noexcept;
+
+		[[nodiscard]]
+		constexpr Point operator %(Point p) const noexcept;
+
 		template <class Type>
 		[[nodiscard]]
 		constexpr Vector2D<Type> operator /(Vector2D<Type> v) const noexcept;
@@ -150,6 +162,8 @@ namespace s3d
 		constexpr Point& operator *=(int32 s) noexcept;
 
 		constexpr Point& operator /=(int32 s) noexcept;
+
+		constexpr Point& operator %=(int32 s) noexcept;
 
 		[[nodiscard]]
 		friend constexpr bool operator ==(Point lhs, Point rhs) noexcept
@@ -165,74 +179,181 @@ namespace s3d
 				|| (lhs.y != rhs.y);
 		}
 
+		/// @brief すべての成分が 0 であるかを返します。
+		/// @return　すべての成分が 0 である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isZero() const noexcept;
 
+		/// @brief 最小の成分を返します。
+		/// @remark Point{ 3, 2 } の場合、2 を返します。
+		/// @return 最小の成分
 		[[nodiscard]]
 		constexpr value_type minComponent() const noexcept;
 
+		/// @brief 最大の成分を返します。
+		/// @remark Point{ 3, 2 } の場合、3 を返します。
+		/// @return 最大の成分
 		[[nodiscard]]
 		constexpr value_type maxComponent() const noexcept;
 
+		/// @brief すべての成分を 0 にします。
 		constexpr void clear() noexcept;
 
-		constexpr Point& set(int32 _x, int32 _y) noexcept;
+		/// @brief x 成分のみを変更した自身のコピーを返します。
+		/// @param _x x 成分
+		/// @return x 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Point withX(value_type _x) const noexcept;
+
+		/// @brief y 成分のみを変更した自身のコピーを返します。
+		/// @param _y y 成分
+		/// @return y 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Point withY(value_type _y) const noexcept;
+
+		constexpr Point& set(value_type _x, value_type _y) noexcept;
 
 		constexpr Point& set(Point p) noexcept;
 
+		/// @brief 現在の座標から移動した座標を返します。
+		/// @param _x X 方向の移動量
+		/// @param _y Y 方向の移動量
+		/// @return 現在の座標から移動した座標
 		[[nodiscard]]
-		constexpr Point movedBy(int32 _x, int32 _y) const noexcept;
+		constexpr Point movedBy(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 現在の座標から移動した座標を返します。
+		/// @param p 移動量
+		/// @return 現在の座標から移動した座標
 		[[nodiscard]]
 		constexpr Point movedBy(Point p) const noexcept;
 
+		/// @brief 現在の座標から移動した座標を返します。
+		/// @tparam Type 移動量を表す二次元ベクトルの要素の型
+		/// @param v 移動量
+		/// @return 現在の座標から移動した座標
 		template <class Type>
 		[[nodiscard]]
 		constexpr Vector2D<Type> movedBy(Vector2D<Type> v) const noexcept;
 
-		constexpr Point& moveBy(int32 _x, int32 _y) noexcept;
+		constexpr Point& moveBy(value_type _x, value_type _y) noexcept;
 
 		constexpr Point& moveBy(Point p) noexcept;
 
+		/// @brief 水平方向のアスペクト比を返します。
+		/// @tparam Type 戻り値の型
+		/// @remark Point{ 3, 2 } の場合、1.5 を返します。
+		/// @return 水平方向のアスペクト比
+		template <class Type = double>
+		[[nodiscard]]
+		constexpr Type horizontalAspectRatio() const noexcept;
+
+		/// @brief ベクトルの大きさ（長さ）を返します。
+		/// @tparam Type 結果の型
+		/// @return ベクトルの大きさ（長さ）
 		template <class Type = double>
 		[[nodiscard]]
 		Type length() const noexcept;
 
+		/// @brief ベクトルの大きさ（長さ）の二乗を返します。
+		/// @tparam Type 結果の型
+		/// @remark 平方根を計算しないため `length()` より高速です。
+		/// @return ベクトルの大きさ（長さ）の二乗
 		template <class Type = double>
 		[[nodiscard]]
 		constexpr Type lengthSq() const noexcept;
 
+		/// @brief 原点からこの座標までのマンハッタン距離を返します。
+		/// @return 原点からのマンハッタン距離
 		[[nodiscard]]
 		constexpr int32 manhattanLength() const noexcept;
 
+		/// @brief 別の位置ベクトルからのマンハッタン距離を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @return 別の座標からのマンハッタン距離
 		[[nodiscard]]
 		constexpr int32 manhattanDistanceFrom(int32 _x, int32 _y) const noexcept;
 
+		/// @brief 別の座標からのマンハッタン距離を返します。
+		/// @param p 別の座標
+		/// @return 別の座標からのマンハッタン距離
 		[[nodiscard]]
 		constexpr int32 manhattanDistanceFrom(Point p) const noexcept;
 
+		/// @brief 別の座標からの距離を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @return 別の座標からの距離
 		[[nodiscard]]
 		double distanceFrom(double _x, double _y) const noexcept;
 
+		/// @brief 別の座標からの距離を返します。
+		/// @param p 別の座標
+		/// @return 別の座標からの距離
 		[[nodiscard]]
 		double distanceFrom(Point p) const noexcept;
 
+		/// @brief 別の座標からの距離を返します。
+		/// @tparam Type 別の座標の成分の型
+		/// @param p 別の座標
+		/// @return 別の座標からの距離
 		template <class Type>
 		[[nodiscard]]
 		double distanceFrom(Vector2D<Type> p) const noexcept;
 
+		/// @brief 別の座標からの距離の二乗を返します。
+		/// @param _x 別の座標の X 成分
+		/// @param _y 別の座標の Y 成分
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @return 別の座標からの距離の二乗
 		[[nodiscard]]
 		constexpr double distanceFromSq(double _x, double _y) const noexcept;
 
+		/// @brief 別の座標からの距離の二乗を返します。
+		/// @param p 別の座標
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @return 別の座標からの距離の二乗
 		[[nodiscard]]
 		constexpr double distanceFromSq(Point p) const noexcept;
 
+		/// @brief 別の座標からの距離の二乗を返します。
+		/// @tparam Type 別の座標の成分の型
+		/// @param p 別の座標
+		/// @remark 平方根を計算しないため `distanceFrom()` より高速です。
+		/// @return 別の座標からの距離の二乗
 		template <class Type>
 		[[nodiscard]]
 		constexpr double distanceFromSq(Vector2D<Type> p) const noexcept;
 
+		/// @brief 幅 x, 高さ y の長方形の面積を返します。
+		/// @return 幅 x, 高さ y の長方形の面積
 		[[nodiscard]]
 		constexpr int32 area() const noexcept;
+
+		/// @brief 時計回りに 90°* n 回転した座標を返します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return 時計回りに 90°* n 回転した座標
+		[[nodiscard]]
+		constexpr Point rotated90(int32 n = 1) const noexcept;
+
+		/// @brief 自身を時計回りに 90°* n 回転します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Point& rotate90(int32 n = 1) noexcept;
+
+		/// @brief centerを中心とし、時計回りに 90°* n 回転した座標を返します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return centerを中心とし、時計回りに 90°* n 回転した座標
+		[[nodiscard]]
+		constexpr Point rotated90At(Point center, int32 n = 1) const noexcept;
+
+		/// @brief centerを中心とし、自身を時計回りに 90°* n 回転します。
+		/// @param center 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Point& rotate90At(Point center, int32 n = 1) noexcept;
 
 		template <class Type = double>
 		[[nodiscard]]
@@ -248,10 +369,18 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Point getPerpendicularCCW() const noexcept;
 
+		/// @brief 別の座標との中間にある座標を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @return 別の座標との中間にある座標
 		template <class Type = double>
 		[[nodiscard]]
 		constexpr Vector2D<Type> getMidpoint(Point other) const noexcept;
 
+		/// @brief 別の座標との中間にある座標を返します。
+		/// @tparam Type 戻り値の二次元座標の要素の型
+		/// @param other 別の座標
+		/// @return 別の座標との中間にある座標
 		template <class Type>
 		[[nodiscard]]
 		constexpr Vector2D<Type> getMidpoint(Vector2D<Type> other) const noexcept;
@@ -268,6 +397,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector2D<Type> lerp(Vector2D<Type> other, double f) const noexcept;
 
+		/// @brief この座標を中心とした円を作成して返します。
+		/// @param r 円の半径
+		/// @return この座標を中心とした円
 		[[nodiscard]]
 		Circle asCircle(double r) const noexcept;
 

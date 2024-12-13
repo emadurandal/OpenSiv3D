@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,9 @@
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Math.hpp>
+# include <Siv3D/Char.hpp>
+# include <Siv3D/2DShapes.hpp>
+# include <Siv3D/BitmapGlyph.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 
@@ -325,6 +328,16 @@ namespace s3d
 		const RectF rect = regionBase(size, Vec2{ 0, 0 });
 
 		return rect.movedBy(pos.x - (rect.w * 0.5), pos.y);
+	}
+
+	bool DrawableText::fits(const RectF& area) const
+	{
+		return fits(font.fontSize(), area);
+	}
+
+	bool DrawableText::fits(const double size, const RectF& area) const
+	{
+		return SIV3D_ENGINE(Font)->fits(font.id(), text, clusters, area, size, 1.0);
 	}
 
 	RectF DrawableText::draw(const double x, const double y, const ColorF& color) const

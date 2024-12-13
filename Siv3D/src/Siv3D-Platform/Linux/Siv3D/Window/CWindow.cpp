@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -16,6 +16,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
@@ -303,6 +304,11 @@ namespace s3d
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
 		return false;
+	}
+
+	void CWindow::setTaskbarProgressBar(double)
+	{
+		// do nothing
 	}
 
 	void CWindow::updateState()

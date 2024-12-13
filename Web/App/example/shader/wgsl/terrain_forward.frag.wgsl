@@ -1,51 +1,51 @@
-//	Copyright (c) 2008-2021 Ryo Suzuki.
-//	Copyright (c) 2016-2021 OpenSiv3D Project.
+//	Copyright (c) 2008-2023 Ryo Suzuki.
+//	Copyright (c) 2016-2023 OpenSiv3D Project.
 //	Licensed under the MIT License.
 
 //
 //	Textures
 //
-[[group(2), binding(0)]] var Sampler0: sampler;
-[[group(2), binding(1)]] var Texture0: texture_2d<f32>;
+@group(2) @binding(0) var Sampler0: sampler;
+@group(2) @binding(1) var Texture0: texture_2d<f32>;
 
-[[group(2), binding(2)]] var Sampler1: sampler;
-[[group(2), binding(3)]] var Texture1: texture_2d<f32>;
+@group(2) @binding(2) var Sampler1: sampler;
+@group(2) @binding(3) var Texture1: texture_2d<f32>;
 
-[[group(2), binding(4)]] var Sampler2: sampler;
-[[group(2), binding(5)]] var Texture2: texture_2d<f32>;
+@group(2) @binding(4) var Sampler2: sampler;
+@group(2) @binding(5) var Texture2: texture_2d<f32>;
 
 //
 //	Constant Buffer
 //
-[[block]] struct PSPerFrameStruct
+struct PSPerFrameStruct
 {
-	gloablAmbientColor: vec3<f32>;
-	sunColor: vec3<f32>;
-	sunDirection: vec3<f32>;
+	globalAmbientColor: vec3<f32>,
+	sunColor: vec3<f32>,
+	sunDirection: vec3<f32>,
 };
 
-[[group(1), binding(0)]]
+@group(1) @binding(0)
 var<uniform> PSPerFrame: PSPerFrameStruct;
 
-[[block]] struct PSPerViewStruct
+struct PSPerViewStruct
 {
-	eyePosition: vec3<f32>;
+	eyePosition: vec3<f32>,
 };
 
-[[group(1), binding(1)]]
+@group(1) @binding(1)
 var<uniform> PSPerView: PSPerViewStruct;
 
-[[block]] struct PSPerMaterialStruct
+struct PSPerMaterialStruct
 {
-	amibientColor: vec3<f32>;
-	hasTexture: u32;
-	diffuseColor: vec4<f32>;
-	specularColor: vec3<f32>;
-	shininess: f32;
-	emissionColor: vec3<f32>;
+	ambientColor: vec3<f32>,
+	hasTexture: u32,
+	diffuseColor: vec4<f32>,
+	specularColor: vec3<f32>,
+	shininess: f32,
+	emissionColor: vec3<f32>,
 };
 
-[[group(1), binding(3)]]
+@group(1) @binding(2)
 var<uniform> PSPerMaterial: PSPerMaterialStruct;
 
 //
@@ -95,12 +95,12 @@ fn TerrainTriplanar(worldPos: vec3<f32>, normal: vec3<f32>, uvScale: f32) -> vec
 //
 //	Functions
 //
-[[stage(fragment)]]
+@fragment
 fn main(
-	[[builtin(position)]] Position: vec4<f32>,
-	[[location(0)]] WorldPosition: vec3<f32>,
-	[[location(1)]] UV: vec2<f32>
-) -> [[location(0)]] vec4<f32>
+	@builtin(position) Position: vec4<f32>,
+	@location(0) WorldPosition: vec3<f32>,
+	@location(1) UV: vec2<f32>
+) -> @location(0) vec4<f32>
 {
 	var lightColor: vec3<f32>		= PSPerFrame.sunColor;
 	var lightDirection: vec3<f32>	= PSPerFrame.sunDirection;
@@ -108,7 +108,7 @@ fn main(
 	var n: vec3<f32> = FetchNormal(UV);
 	var l: vec3<f32> = lightDirection;
 	var diffuseColor: vec4<f32> = TerrainTriplanar(WorldPosition, n, 0.5);
-	var ambientColor: vec3<f32> = (PSPerMaterial.amibientColor * PSPerFrame.gloablAmbientColor);
+	var ambientColor: vec3<f32> = (PSPerMaterial.ambientColor * PSPerFrame.globalAmbientColor);
 
 	// Diffuse
 	var diffuseReflection: vec3<f32> = CalculateDiffuseReflection(n, l, lightColor, diffuseColor.rgb, ambientColor);

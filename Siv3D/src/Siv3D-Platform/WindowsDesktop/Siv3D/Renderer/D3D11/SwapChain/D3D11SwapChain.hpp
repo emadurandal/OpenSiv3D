@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -27,13 +27,15 @@ namespace s3d
 		
 		ID3D11DeviceContext* m_context	= nullptr;
 
+		bool m_tearingSupport;
+
 		DXGI_SWAP_CHAIN_DESC1 m_desc	= {};
 
 		ComPtr<IDXGISwapChain1> m_swapChain1;
 
 		double m_displayFrequency		= 60.0;
 
-		Rect m_previousWindowBounds		= Rect(0);
+		Rect m_previousWindowBounds		= Rect::Empty();
 
 		uint64 m_lastPresentTime = 0;
 

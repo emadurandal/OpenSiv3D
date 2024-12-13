@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -20,15 +20,25 @@ namespace s3d
 	/// @brief リストボックスの状態
 	struct ListBoxState
 	{
+		/// @brief アイテム
 		Array<String> items;
 
+		/// @brief 選択されているアイテムのインデックス
 		Optional<size_t> selectedItemIndex;
 
+		/// @brief スクロールバーの状態
 		Optional<std::pair<int32, double>> scrollBarGrabbed;
 
+		/// @brief スクロール数
 		int32 scroll = 0;
 
+		/// @brief アクティブであるか
+		bool active = false;
+
+		/// @brief ホイールの状態
 		double wheel = 0.0;
+
+		Stopwatch upPressStopwatch, downPressStopwatch;
 
 		SIV3D_NODISCARD_CXX20
 		ListBoxState() = default;

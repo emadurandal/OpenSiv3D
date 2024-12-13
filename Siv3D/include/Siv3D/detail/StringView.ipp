@@ -2,18 +2,14 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # pragma once
-# include <cassert>
-# include <stdexcept>
-# include <algorithm>
-# include "../Utility.hpp"
 
 namespace s3d
 {
@@ -203,6 +199,16 @@ namespace s3d
 		return m_view.compare(pos1, n1, s, n2);
 	}
 
+	inline constexpr bool StringView::contains(const value_type ch) const noexcept
+	{
+		return (indexOf(ch) != StringView::npos);
+	}
+
+	inline constexpr bool StringView::contains(const StringView s) const noexcept
+	{
+		return (indexOf(s) != StringView::npos);
+	}
+
 	inline constexpr bool StringView::starts_with(const value_type ch) const noexcept
 	{
 		return (not empty()) && (front() == ch);
@@ -214,7 +220,7 @@ namespace s3d
 			&& (std::char_traits<value_type>::compare(m_view.data(), s.data(), s.size()) == 0);
 	}
 
-	inline bool StringView::ends_with(const value_type ch) const noexcept
+	inline constexpr bool StringView::ends_with(const value_type ch) const noexcept
 	{
 		return (not empty()) && (back() == ch);
 	}

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -46,13 +46,13 @@ namespace s3d
 
 			std::shared_ptr<Data_t> _s;
 
-			SceneManager<State_t, Data_t>* _m;
+			SceneManager<State_t, Data_t>*& _m;
 
 			SIV3D_NODISCARD_CXX20
 			InitData() = default;
 
 			SIV3D_NODISCARD_CXX20
-			InitData(const State_t& _state, const std::shared_ptr<Data_t>& data, SceneManager<State_t, Data_t>* manager);
+			InitData(const State_t& _state, const std::shared_ptr<Data_t>& data, SceneManager<State_t, Data_t>*& manager);
 		};
 
 	public:
@@ -121,7 +121,7 @@ namespace s3d
 
 		std::shared_ptr<Data_t> m_data;
 
-		SceneManager<State_t, Data_t>* m_manager;
+		SceneManager<State_t, Data_t>*& m_manager;
 	};
 
 	/// @brief シーン遷移管理
@@ -139,10 +139,20 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		SceneManager();
 
+		SIV3D_NODISCARD_CXX20
+		SceneManager(const SceneManager&) = delete;
+
+		SIV3D_NODISCARD_CXX20
+		SceneManager(SceneManager&& other) noexcept;
+
 		/// @brief シーン管理を初期化します。
 		/// @param data 共有データ
 		SIV3D_NODISCARD_CXX20
 		explicit SceneManager(const std::shared_ptr<Data>& data);
+
+		SceneManager& operator =(const SceneManager&) = delete;
+
+		SceneManager& operator =(SceneManager&& other) noexcept;
 
 		/// @brief シーンを登録します。
 		/// @tparam SceneType シーンの型
@@ -153,8 +163,15 @@ namespace s3d
 
 		/// @brief 最初のシーンを初期化します。
 		/// @param state 最初のシーン
+		/// @param transitionTime フェードイン・アウトの時間
 		/// @return 初期化に成功した場合 true, それ以外の場合は false
-		bool init(const State& state);
+		bool init(const State& state, const Duration& transitionTime = Duration{ 2.0 });
+
+		/// @brief 最初のシーンを初期化します。
+		/// @param state 最初のシーン
+		/// @param transitionTimeMillisec フェードイン・アウトの時間（ミリ秒）
+		/// @return 初期化に成功した場合 true, それ以外の場合は false
+		bool init(const State& state, int32 transitionTimeMillisec);
 
 		/// @brief 現在のシーンの更新処理のみを行います。
 		/// @remark 通常はこの関数は使用しません。
@@ -177,12 +194,12 @@ namespace s3d
 		/// @brief 共有データを取得します。
 		/// @return 共有データへのポインタ
 		[[nodiscard]]
-		const std::shared_ptr<const Data> get() const noexcept;
+		std::shared_ptr<const Data> get() const noexcept;
 
 		/// @brief シーンを変更します。
 		/// @param state 次のシーンのキー
 		/// @param transitionTime フェードイン・アウトの時間
-		/// @param crossFade ロスフェードを有効にするか
+		/// @param crossFade クロスフェードを有効にするか
 		/// @return シーンの変更が開始される場合 true, それ以外の場合は false
 		bool changeScene(const State& state, const Duration& transitionTime = Duration{ 2.0 }, CrossFade crossFade = CrossFade::No);
 
@@ -212,6 +229,8 @@ namespace s3d
 		using Scene_t = std::shared_ptr<IScene<State, Data>>;
 
 		using FactoryFunction_t = std::function<Scene_t()>;
+
+		std::unique_ptr<SceneManager*> m_sceneManagerPtr;
 
 		HashTable<State, FactoryFunction_t> m_factories;
 

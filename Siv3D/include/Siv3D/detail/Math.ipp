@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -307,14 +307,14 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		inline float Modf(float x, float& i) noexcept
+		inline float Modf(float x, float& ip) noexcept
 		{
-			return std::modf(x, &i);
+			return std::modf(x, &ip);
 		}
 
-		inline double Modf(double x, double& i) noexcept
+		inline double Modf(double x, double& ip) noexcept
 		{
-			return std::modf(x, &i);
+			return std::modf(x, &ip);
 		}
 
 		SIV3D_MATH_FUNCTION_XYREF(Modf)
@@ -684,6 +684,108 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	Max
+		//
+		//////////////////////////////////////////////////
+
+		inline constexpr float Max(const float x, const float y) noexcept
+		{
+			return s3d::Max(x, y);
+		}
+
+		inline constexpr double Max(const double x, const double y) noexcept
+		{
+			return s3d::Max(x, y);
+		}
+
+		inline constexpr Point Max(const Point v1, const Point v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y) };
+		}
+
+		inline constexpr Float2 Max(const Float2 v1, const Float2 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y) };
+		}
+
+		inline constexpr Float3 Max(const Float3 v1, const Float3 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y), s3d::Max(v1.z, v2.z) };
+		}
+
+		inline constexpr Float4 Max(const Float4 v1, const Float4 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y), s3d::Max(v1.z, v2.z), s3d::Max(v1.w, v2.w) };
+		}
+
+		inline constexpr Vec2 Max(const Vec2 v1, const Vec2 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y) };
+		}
+
+		inline constexpr Vec3 Max(const Vec3 v1, const Vec3 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y), s3d::Max(v1.z, v2.z) };
+		}
+
+		inline constexpr Vec4 Max(const Vec4 v1, const Vec4 v2) noexcept
+		{
+			return{ s3d::Max(v1.x, v2.x), s3d::Max(v1.y, v2.y), s3d::Max(v1.z, v2.z), s3d::Max(v1.w, v2.w) };
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Min
+		//
+		//////////////////////////////////////////////////
+	
+		inline constexpr float Min(const float x, const float y) noexcept
+		{
+			return s3d::Min(x, y);
+		}
+
+		inline constexpr double Min(const double x, const double y) noexcept
+		{
+			return s3d::Min(x, y);
+		}
+
+		inline constexpr Point Min(const Point v1, const Point v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y) };
+		}
+
+		inline constexpr Float2 Min(const Float2 v1, const Float2 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y) };
+		}
+
+		inline constexpr Float3 Min(const Float3 v1, const Float3 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y), s3d::Min(v1.z, v2.z) };
+		}
+
+		inline constexpr Float4 Min(const Float4 v1, const Float4 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y), s3d::Min(v1.z, v2.z), s3d::Min(v1.w, v2.w) };
+		}
+
+		inline constexpr Vec2 Min(const Vec2 v1, const Vec2 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y) };
+		}
+
+		inline constexpr Vec3 Min(const Vec3 v1, const Vec3 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y), s3d::Min(v1.z, v2.z) };
+		}
+
+		inline constexpr Vec4 Min(const Vec4 v1, const Vec4 v2) noexcept
+		{
+			return{ s3d::Min(v1.x, v2.x), s3d::Min(v1.y, v2.y), s3d::Min(v1.z, v2.z), s3d::Min(v1.w, v2.w) };
+		}
+
+		//////////////////////////////////////////////////
+		//
 		//	Clamp
 		//
 		//////////////////////////////////////////////////
@@ -1013,6 +1115,118 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
+		//	Dot
+		//
+		//////////////////////////////////////////////////
+
+		inline constexpr float Dot(const Float2 v1, const Float2 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		inline constexpr double Dot(const Float2 v1, const Vec2 v2) noexcept
+		{
+			return Vec2{ v1 }.dot(v2);
+		}
+
+		inline constexpr double Dot(const Vec2 v1, const Float2 v2) noexcept
+		{
+			return v1.dot(Vec2{ v2 });
+		}
+
+		inline constexpr double Dot(const Vec2 v1, const Vec2 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		inline constexpr float Dot(const Float3 v1, const Float3 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		inline constexpr double Dot(const Float3 v1, const Vec3 v2) noexcept
+		{
+			return Vec3{ v1 }.dot(v2);
+		}
+
+		inline constexpr double Dot(const Vec3 v1, const Float3 v2) noexcept
+		{
+			return v1.dot(Vec3{ v2 });
+		}
+
+		inline constexpr double Dot(const Vec3 v1, const Vec3 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		inline constexpr float Dot(const Float4 v1, const Float4 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		inline constexpr double Dot(const Float4 v1, const Vec4 v2) noexcept
+		{
+			return Vec4{ v1 }.dot(v2);
+		}
+
+		inline constexpr double Dot(const Vec4 v1, const Float4 v2) noexcept
+		{
+			return v1.dot(Vec4{ v2 });
+		}
+
+		inline constexpr double Dot(const Vec4 v1, const Vec4 v2) noexcept
+		{
+			return v1.dot(v2);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Cross
+		//
+		//////////////////////////////////////////////////
+
+		inline constexpr float Cross(const Float2 v1, const Float2 v2) noexcept
+		{
+			return v1.cross(v2);
+		}
+
+		inline constexpr double Cross(const Float2 v1, const Vec2 v2) noexcept
+		{
+			return Vec2{ v1 }.cross(v2);
+		}
+
+		inline constexpr double Cross(const Vec2 v1, const Float2 v2) noexcept
+		{
+			return v1.cross(Vec2{ v2 });
+		}
+
+		inline constexpr double Cross(const Vec2 v1, const Vec2 v2) noexcept
+		{
+			return v1.cross(v2);
+		}
+
+		inline constexpr Float3 Cross(const Float3 v1, const Float3 v2) noexcept
+		{
+			return v1.cross(v2);
+		}
+
+		inline constexpr Vec3 Cross(const Float3 v1, const Vec3 v2) noexcept
+		{
+			return Vec3{ v1 }.cross(v2);
+		}
+
+		inline constexpr Vec3 Cross(const Vec3 v1, const Float3 v2) noexcept
+		{
+			return v1.cross(Vec3{ v2 });
+		}
+
+		inline constexpr Vec3 Cross(const Vec3 v1, const Vec3 v2) noexcept
+		{
+			return v1.cross(v2);
+		}
+
+		//////////////////////////////////////////////////
+		//
 		//	Normalize
 		//
 		//////////////////////////////////////////////////
@@ -1139,6 +1353,77 @@ namespace s3d
 		}
 
 		SIV3D_MATH_FUNCTION_CONSTEXPR_X(Smoothstep)
+
+		//////////////////////////////////////////////////
+		//
+		//	ClampAngle
+		//
+		//////////////////////////////////////////////////
+
+		inline float ClampAngle(const float angle, const float min, float max) noexcept
+		{
+			const auto start = (min + max) * 0.5f - PiF;
+			const auto floor = Floor((angle - start) / TwoPiF) * TwoPiF;
+			return Clamp(angle, min + floor, max + floor);
+		}
+
+		inline double ClampAngle(const double angle, const double min, double max) noexcept
+		{
+			const auto start = (min + max) * 0.5 - Pi;
+			const auto floor = Floor((angle - start) / TwoPi) * TwoPi;
+			return Clamp(angle, min + floor, max + floor);
+		}
+
+		SIV3D_CONCEPT_ARITHMETIC_
+		inline double ClampAngle(Arithmetic angle, Arithmetic min, Arithmetic max) noexcept
+		{
+			const auto start = (min + max) * 0.5 - Pi;
+			const auto floor = Floor((angle - start) / TwoPi) * TwoPi;
+			return Clamp(angle, min + floor, max + floor);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	NormalizeAngle
+		//
+		//////////////////////////////////////////////////
+
+		inline float NormalizeAngle(float radian, const float center) noexcept
+		{
+			radian = Math::Fmod(radian + (PiF - center), TwoPiF);
+
+			if (radian < 0.0f)
+			{
+				radian += TwoPiF;
+			}
+
+			return (radian - (PiF - center));
+		}
+
+		inline double NormalizeAngle(double radian, const double center) noexcept
+		{
+			radian = Math::Fmod(radian + (Pi - center), TwoPi);
+
+			if (radian < 0.0)
+			{
+				radian += TwoPi;
+			}
+
+			return (radian - (Pi - center));
+		}
+
+		SIV3D_CONCEPT_ARITHMETIC_
+		inline double NormalizeAngle(const Arithmetic radian_, const double center) noexcept
+		{
+			double radian = Math::Fmod(radian_ + (Pi - center), TwoPi);
+
+			if (radian < 0.0)
+			{
+				radian += TwoPi;
+			}
+
+			return (radian - (Pi - center));
+		}
 
 		//////////////////////////////////////////////////
 		//

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -21,6 +21,7 @@
 	#	include <execution>
 	# endif
 # endif
+# include <unordered_set>
 # include "String.hpp"
 # include "Meta.hpp"
 # include "Threading.hpp"
@@ -93,13 +94,13 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Array(Array&&) = default;
 
-		/// @brief 
-		/// @param other 
+		/// @brief std::vector からのコピーで配列を作成します。
+		/// @param other コピーする配列
 		SIV3D_NODISCARD_CXX20
 		Array(const container_type& other);
 
-		/// @brief 
-		/// @param other 
+		/// @brief std::vector からのムーブで配列を作成します。
+		/// @param other ムーブする配列
 		SIV3D_NODISCARD_CXX20
 		Array(container_type&& other);
 
@@ -108,27 +109,27 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		explicit Array(const Allocator& alloc) noexcept;
 
-		/// @brief 
-		/// @param count 
-		/// @param value 
-		/// @param alloc 
+		/// @brief count 個の value で配列を作成します。
+		/// @param count 個数
+		/// @param value 要素
+		/// @param alloc アロケータ
 		SIV3D_NODISCARD_CXX20
-		Array(size_type count, const value_type& value, const Allocator& alloc = Allocator());
+		Array(size_type count, const value_type& value, const Allocator& alloc = Allocator{});
 
-		/// @brief 
-		/// @param count 
-		/// @param alloc 
+		/// @brief count 個の Type() で配列を作成します。
+		/// @param count 個数
+		/// @param alloc アロケータ
 		SIV3D_NODISCARD_CXX20
-		explicit Array(size_type count, const Allocator& alloc = Allocator());
+		explicit Array(size_type count, const Allocator& alloc = Allocator{});
 
-		/// @brief 
-		/// @tparam Iterator 
-		/// @param first 
-		/// @param last 
-		/// @param alloc 
+		/// @brief イテレータが指す範囲の要素から配列を作成します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @param alloc アロケータ
 		template <class Iterator>
 		SIV3D_NODISCARD_CXX20
-		Array(Iterator first, Iterator last, const Allocator& alloc = Allocator());
+		Array(Iterator first, Iterator last, const Allocator& alloc = Allocator{});
 
 		/// @brief 
 		/// @param other 
@@ -154,11 +155,11 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Array(container_type&& other, const Allocator& alloc);
 
-		/// @brief 
-		/// @param ilist 
-		/// @param alloc 
+		/// @brief 初期化リストから配列を作成します。
+		/// @param ilist 初期化リスト
+		/// @param alloc アロケータ
 		SIV3D_NODISCARD_CXX20
-		Array(std::initializer_list<value_type> ilist, const Allocator& alloc = Allocator());
+		Array(std::initializer_list<value_type> ilist, const Allocator& alloc = Allocator{});
 
 		/// @brief `asArray()` を持つ型から配列を作成します。
 		/// @tparam ArrayIsh `asArray()` を持つ型
@@ -246,64 +247,109 @@ namespace s3d
 		[[nodiscard]]
 		value_type& operator [](size_t index);
 
+		/// @brief 先頭の要素への参照を返します。
+		/// @return 先頭の要素への参照
 		[[nodiscard]]
 		reference front();
 
+		/// @brief 先頭の要素への参照を返します。
+		/// @return 先頭の要素への参照
 		[[nodiscard]]
 		const_reference front() const;
 
+		/// @brief 末尾の要素への参照を返します。
+		/// @return 末尾の要素への参照
 		[[nodiscard]]
 		reference back();
 
+		/// @brief 末尾の要素への参照を返します。
+		/// @return 末尾の要素への参照
 		[[nodiscard]]
 		const_reference back() const;
 
+		/// @brief 先頭の要素を指すポインタを返します。
+		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
 		value_type* data() noexcept;
 
+		/// @brief 先頭の要素を指すポインタを返します。
+		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
 		const value_type* data() const noexcept;
 
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		iterator begin() noexcept;
 
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		iterator end() noexcept;
 
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator begin() const noexcept;
 
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator end() const noexcept;
 
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator cbegin() const noexcept;
 
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
 		const_iterator cend() const noexcept;
 
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		reverse_iterator rbegin() noexcept;
 
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		reverse_iterator rend() noexcept;
 
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator rbegin() const noexcept;
 
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator rend() const noexcept;
 
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator crbegin() const noexcept;
 
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
 		const_reverse_iterator crend() const noexcept;
 
+		/// @brief 配列が空であるかを返します。
+		/// @return 配列が空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool empty() const noexcept;
 
 		/// @brief 配列が空であるかを返します。
+		/// @remark `empty()` と同じです。
 		/// @return 配列が空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isEmpty() const noexcept;
@@ -313,19 +359,30 @@ namespace s3d
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
+		/// @brief 配列の要素数を返します。
+		/// @return 配列の要素数
 		[[nodiscard]]
 		size_type size() const noexcept;
 
+		/// @brief 配列の要素数の最大値を返します。
+		/// @return 配列の要素数の最大値
 		[[nodiscard]]
 		size_type max_size() const noexcept;
 
-		void reserve(size_type new_cap);
+		/// @brief 要素数 n までメモリの再確保無しで格納できるよう、必要に応じてメモリを再確保します
+		/// @param n メモリを確保する要素数
+		void reserve(size_type n);
 
+		/// @brief メモリの再確保無しで格納できる要素数を返します。
+		/// @return メモリの再確保無しで格納できる要素数
 		[[nodiscard]]
 		size_type capacity() const noexcept;
 
+		/// @brief capacity() を size() まで減らすようにします。
+		/// @remark この関数の呼び出しの後で capacity() == size() になるとは限りません。
 		void shrink_to_fit();
 
+		/// @brief 配列の要素を削除し、空の配列にします。
 		void clear() noexcept;
 
 		iterator insert(const_iterator pos, const value_type& value);
@@ -342,21 +399,35 @@ namespace s3d
 		template <class... Args>
 		iterator emplace(const_iterator pos, Args&&... args);
 
+		/// @brief 指定した位置の要素を削除します。
+		/// @param pos 削除する要素の位置
+		/// @return 削除した要素の次の要素を指すイテレータ
 		iterator erase(const_iterator pos);
 
 		iterator erase(const_iterator first, const_iterator last);
 
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param value 追加する値
 		void push_back(const value_type& value);
 
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param value 追加する値
 		void push_back(value_type&& value);
 
 		template <class... Args>
 		reference emplace_back(Args&&... args);
 
+		/// @brief 配列の末尾の要素を削除します。
+		/// @remark 配列が空の時に呼んではいけません。
 		void pop_back();
 
+		/// @brief 配列の要素数を変更します。
+		/// @param count 新しい要素数
 		void resize(size_type count);
 
+		/// @brief 配列の要素数を変更します。
+		/// @param count 新しい要素数
+		/// @param value 新しく増える要素の初期値
 		void resize(size_type count, const value_type& value);
 
 		/// @brief 他の配列と要素を入れ替えます。
@@ -421,7 +492,7 @@ namespace s3d
 		/// @brief 条件を満たす要素があるかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		bool any(Fty f = Identity) const;
@@ -486,6 +557,21 @@ namespace s3d
 		[[nodiscard]]
 		Array<Array<value_type>> chunk(size_t n) const;
 
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool contains(const value_type& value) const;
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
+		[[nodiscard]]
+		bool contains_if(Fty f) const;
+
 		/// @brief 指定した値と等しい要素の個数を返します。
 		/// @param value 検索する値
 		/// @return 指定した値と等しい要素の個数
@@ -536,8 +622,9 @@ namespace s3d
 		/// @param index インデックス
 		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
 		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
+		template <class U>
 		[[nodiscard]]
-		const value_type& fetch(size_t index, const value_type& defaultValue) const;
+		value_type fetch(size_t index, U&& defaultValue) const;
 
 		/// @brief 指定した値を全ての要素に代入します。
 		/// @param value 代入する値
@@ -563,6 +650,7 @@ namespace s3d
 		/// @brief 指定した値と等しい要素があるかを返します。
 		/// @param value 検索する値
 		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		/// @remark `.contains(value)` と同じです。
 		[[nodiscard]]
 		bool includes(const value_type& value) const;
 
@@ -570,13 +658,14 @@ namespace s3d
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
 		/// @remark `.any(f)` と同じです。
-		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		/// @remark `.contains_if(f)` および `.any(f)` と同じです。
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		bool includes_if(Fty f) const;
 
-		/// @brief 
-		/// @return 
+		/// @brief 配列の要素が昇順にソートされているかを返します。
+		/// @return 配列の要素が昇順にソートされている場合 true, それ以外の場合は false
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		bool isSorted() const;
@@ -603,6 +692,13 @@ namespace s3d
 		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		bool none(Fty f = Identity) const;
+
+		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
+		auto partition(Fty f);
 
 		/// @brief 
 		/// @tparam Fty 
@@ -637,97 +733,103 @@ namespace s3d
 		[[nodiscard]]
 		Array removed(const value_type& value)&&;
 
-		/// @brief 
-		/// @param index 
-		/// @return 
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
 		Array& remove_at(size_t index);
 
-		/// @brief 
-		/// @param index 
-		/// @return 
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
 		[[nodiscard]]
-		Array removed_at(size_t index) const;
+		Array removed_at(size_t index) const&;
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @return 
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		Array removed_at(size_t index) &&;
+
+		/// @brief 条件を満たす要素を配列から削除します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @return *this
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		Array& remove_if(Fty f);
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @return 
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @return 新しい配列
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		Array removed_if(Fty f) const&;
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @return 
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @return 新しい配列
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		Array removed_if(Fty f)&&;
 
-		/// @brief 
-		/// @param oldValue 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
 		Array& replace(const value_type& oldValue, const value_type& newValue);
 
-		/// @brief 
-		/// @param oldValue 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
 		[[nodiscard]]
 		Array replaced(const value_type& oldValue, const value_type& newValue) const&;
 
-		/// @brief 
-		/// @param oldValue 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した値と等しい全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい配列
 		[[nodiscard]]
 		Array replaced(const value_type& oldValue, const value_type& newValue)&&;
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		Array& replace_if(Fty f, const value_type& newValue);
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		Array replaced_if(Fty f, const value_type& newValue) const&;
 
-		/// @brief 
-		/// @tparam Fty 
-		/// @param f 
-		/// @param newValue 
-		/// @return 
+		/// @brief 指定した条件を満たす全ての要素を別の値に置き換えた新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい配列
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
 		[[nodiscard]]
 		Array replaced_if(Fty f, const value_type& newValue)&&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 配列の要素を逆順に並び替えます。
+		/// @return *this
 		Array& reverse();
 
-		/// @brief 
-		/// @return 
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		[[nodiscard]]
 		Array reversed() const&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		[[nodiscard]]
 		Array reversed()&&;
 
@@ -762,25 +864,25 @@ namespace s3d
 		[[nodiscard]]
 		Array rotated(std::ptrdiff_t count = 1)&&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を降順に並び替えます。
+		/// @return *this
 		template <class T = Type, std::enable_if_t<Meta::HasGreaterThan_v<T>>* = nullptr>
 		Array& rsort();
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasGreaterThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array rsorted() const&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を降順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasGreaterThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array rsorted()&&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 配列の要素の並び順をランダムにシャッフルします。
+		/// @return *this
 		Array& shuffle();
 
 		/// @brief 
@@ -828,13 +930,13 @@ namespace s3d
 		[[nodiscard]]
 		Array slice(size_t index, size_t length) const;
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を昇順に並び替えます。
+		/// @return *this
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		Array& sort();
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えます。
+		/// @return *this
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		Array& stable_sort();
 
@@ -852,26 +954,33 @@ namespace s3d
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>* = nullptr>
 		Array& stable_sort_by(Fty f);
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array sorted() const&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
+		auto stable_partition(Fty f);
+
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array stable_sorted() const&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array sorted()&&;
 
-		/// @brief 
-		/// @return 
+		/// @brief 要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @return 新しい配列
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
 		[[nodiscard]]
 		Array stable_sorted()&&;
@@ -908,28 +1017,22 @@ namespace s3d
 		[[nodiscard]]
 		Array stable_sorted_by(Fty f)&&;
 
-		/// @brief 
-		/// @tparam T 
-		/// @return 
+		/// @brief 要素を `+` 演算子を用いて合計します。
+		/// @return 合計値
 		template <class T = Type, std::enable_if_t<Meta::HasPlus_v<T>>* = nullptr>
 		[[nodiscard]]
 		auto sum() const;
 
-		/// @brief 
-		/// @tparam T 
 		template <class T = Type, std::enable_if_t<not Meta::HasPlus_v<T>>* = nullptr>
 		void sum() const = delete;
 
-		/// @brief 
-		/// @tparam T 
-		/// @return 
+		/// @brief 浮動小数点数型の要素を、誤差が小さくなるように合計します。
+		/// @remark `sum()` よりも浮動小数点数誤差が小さくなります。
+		/// @return 合計値
 		template <class T = Type, std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
 		[[nodiscard]]
 		auto sumF() const;
 
-		/// @brief 
-		/// @tparam T 
-		/// @return 
 		template <class T = Type, std::enable_if_t<not std::is_floating_point_v<T>>* = nullptr>
 		[[nodiscard]]
 		auto sumF() const = delete;
@@ -955,7 +1058,12 @@ namespace s3d
 		/// @brief 
 		/// @return 
 		[[nodiscard]]
-		Array stable_uniqued() const;
+		Array stable_uniqued() const&;
+
+		/// @brief 
+		/// @return 
+		[[nodiscard]]
+		Array stable_uniqued() &&;
 
 		/// @brief 
 		/// @return 
@@ -1076,7 +1184,7 @@ namespace s3d
 		[[nodiscard]]
 		static Array IndexedGenerate(size_type size, Fty indexedGenerator);
 
-#if __cpp_impl_three_way_comparison
+#if __cpp_lib_three_way_comparison
 
 		[[nodiscard]]
 		auto operator <=>(const Array& rhs) const {
@@ -1118,11 +1226,14 @@ namespace s3d
 	inline void swap(Array<Type, Allocator>& a, Array<Type, Allocator>& b) noexcept;
 
 	// deduction guide
-	template <class Type>
-	Array(std::initializer_list<Type>)->Array<Type>;
+	template <class Type, class Allocator = std::allocator<Type>>
+	Array(std::initializer_list<Type>, const Allocator& = Allocator{}) -> Array<Type, Allocator>;
 
 	template <class ArrayIsh, std::enable_if_t<Meta::HasAsArray<ArrayIsh>::value>* = nullptr>
-	Array(const ArrayIsh& a)->Array<typename decltype(std::declval<ArrayIsh>().asArray())::value_type>;
+	Array(ArrayIsh&&) -> Array<typename std::remove_cvref_t<decltype(std::declval<ArrayIsh>().asArray())>::value_type, typename std::remove_cvref_t<decltype(std::declval<ArrayIsh>().asArray())>::allocator_type>;
+
+	template <class Iterator, class Allocator = std::allocator<typename std::iterator_traits<Iterator>::value_type>>
+	Array(Iterator, Iterator, const Allocator& = Allocator{}) -> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
 	/// @brief 
 	/// @tparam T0 

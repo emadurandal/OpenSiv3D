@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -91,7 +91,7 @@ namespace s3d
 		/// @brief マウスカーソルを指定したクライアント座標に移動させます。
 		/// @param x 移動先の X 座標 (ピクセル)
 		/// @param y 移動先の Y 座標 (ピクセル)
-		inline void SetPos(int32 x, int32 y);
+		void SetPos(int32 x, int32 y);
 
 		/// @brief マウスカーソルを指定したクライアント座標に移動させます。
 		/// @param pos 移動先の座標 (ピクセル)
@@ -139,6 +139,15 @@ namespace s3d
 		/// @return 適用されているカメラ座標変換
 		[[nodiscard]]
 		const Mat3x2& GetCameraTransform() noexcept;
+
+		/// @brief マウスカーソルのキャプチャ状態を設定します。
+		/// @param captured キャプチャ状態にする場合 true, 解除する場合は false
+		void SetCapture(bool captured) noexcept;
+
+		/// @brief マウスカーソルのキャプチャ状態を返します。
+		/// @return マウスカーソルがキャプチャされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool IsCaptured() noexcept;
 	}
 }
 

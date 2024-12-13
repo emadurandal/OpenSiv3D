@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -181,6 +181,11 @@ namespace s3d
 		return *this;
 	}
 
+	inline constexpr bool Triangle::isClockwise() const noexcept
+	{
+		return Geometry2D::IsClockwise(p0, p1, p2);
+	}
+
 	inline constexpr Triangle::position_type& Triangle::p(const size_t index) noexcept
 	{
 		return (&p0)[index];
@@ -231,9 +236,9 @@ namespace s3d
 		}
 	}
 
-	inline Triangle::value_type Triangle::area() const noexcept
+	inline constexpr Triangle::value_type Triangle::area() const noexcept
 	{
-		return std::abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y)) * 0.5;
+		return Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y)) * 0.5;
 	}
 
 	inline Triangle::value_type Triangle::perimeter() const noexcept
@@ -275,4 +280,17 @@ namespace s3d
 	{
 		return Geometry2D::Contains(*this, other);
 	}
+
+	inline constexpr Triangle Triangle::FromPoints(const position_type& p0, const position_type& p1, const position_type& p2) noexcept
+	{
+		if (Geometry2D::IsClockwise(p0, p1, p2))
+		{
+			return{ p0, p1, p2 };
+		}
+		else
+		{
+			return{ p0, p2, p1 };
+		}
+	}
+
 }

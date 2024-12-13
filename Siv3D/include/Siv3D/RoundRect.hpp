@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -218,10 +218,16 @@ namespace s3d
 		constexpr position_type center() const noexcept;
 
 		[[nodiscard]]
-		constexpr double area() const noexcept;
+		constexpr value_type area() const noexcept;
 
 		[[nodiscard]]
-		constexpr double perimeter() const noexcept;
+		constexpr value_type perimeter() const noexcept;
+
+		[[nodiscard]]
+		constexpr value_type horizontalAspectRatio() const noexcept;
+
+		[[nodiscard]]
+		Array<Vec2> outerVertices(uint32 quality = 24) const;
 
 		[[nodiscard]]
 		Polygon asPolygon(uint32 quality = 24) const;
@@ -289,11 +295,24 @@ namespace s3d
 
 		const RoundRect& draw(const ColorF& color = Palette::White) const;
 
+		const RoundRect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
 		const RoundRect& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const RoundRect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
-		const RoundRect& drawShadow(const Vec2& offset, double blurRadius, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
+		/// @brief 角丸長方形の影を描画します。
+		/// @param offset 影の位置のオフセット（ピクセル）
+		/// @param blur ぼかしの大きさ（ピクセル）
+		/// @param spread 影の膨張（ピクセル）
+		/// @param color 影の色
+		/// @param fill 影の内部を塗りつぶすか
+		/// @return *this
+		const RoundRect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		[[nodiscard]]
 		TexturedRoundRect operator ()(const Texture& texture) const;

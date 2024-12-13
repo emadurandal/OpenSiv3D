@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -23,13 +23,13 @@ namespace s3d
 		[[nodiscard]]
 		inline constexpr std::tuple<double, double, double, double> GetLRTB(const Rect& rect) noexcept
 		{
-			return{ rect.x, (rect.x + rect.w), rect.y, (rect.y + rect.h) };
+			return{ rect.pos.x, (rect.pos.x + rect.size.x), rect.pos.y, (rect.pos.y + rect.size.y) };
 		}
 
 		[[nodiscard]]
 		inline constexpr std::tuple<double, double, double, double> GetLRTB(const RectF& rect) noexcept
 		{
-			return{ rect.x, (rect.x + rect.w), rect.y, (rect.y + rect.h) };
+			return{ rect.pos.x, (rect.pos.x + rect.size.x), rect.pos.y, (rect.pos.y + rect.size.y) };
 		}
 
 		[[nodiscard]]
@@ -39,6 +39,26 @@ namespace s3d
 				&& (point.x < right)
 				&& (top <= point.y)
 				&& (point.y < bottom);
+		}
+
+		/// @brief 点 p が円 c に含まれているかを判定します。
+		/// @param c 円
+		/// @param p 点
+		/// @param tolerance 許容誤差（相対誤差または絶対誤差のいずれかが許容誤差以下であれば許容）
+		/// @return 点 p が円 c に含まれている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		inline bool Contains(const Circle& c, const Vec2& p, const double tolerance = 1e-8)
+		{
+			const double dSquared = (c.center - p).lengthSq();
+			const double rSquared = (c.r * c.r);
+			const double err = Max(0.0, (dSquared - rSquared));
+
+			if (rSquared == 0)
+			{
+				return (err <= tolerance);
+			}
+			
+			return (((err / rSquared) <= tolerance) || (err <= tolerance));
 		}
 
 		//
@@ -118,18 +138,18 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Point& a, const Rect& b) noexcept
 		{
-			return (b.x <= a.x)
-				&& (a.x < (b.x + b.w))
-				&& (b.y <= a.y)
-				&& (a.y < (b.y + b.h));
+			return (b.pos.x <= a.x)
+				&& (a.x < (b.pos.x + b.size.x))
+				&& (b.pos.y <= a.y)
+				&& (a.y < (b.pos.y + b.size.y));
 		}
 
 		inline constexpr bool Intersect(const Point& a, const RectF& b) noexcept
 		{
-			return (b.x <= a.x)
-				&& (a.x < (b.x + b.w))
-				&& (b.y <= a.y)
-				&& (a.y < (b.y + b.h));
+			return (b.pos.x <= a.x)
+				&& (a.x < (b.pos.x + b.size.x))
+				&& (b.pos.y <= a.y)
+				&& (a.y < (b.pos.y + b.size.y));
 		}
 
 		inline constexpr bool Intersect(const Point& a, const Circle& b) noexcept
@@ -139,16 +159,16 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Point& a, const Ellipse& b) noexcept
 		{
-			if ((b.a == 0.0)
-				|| (b.b == 0.0))
+			if ((b.axes.x == 0.0)
+				|| (b.axes.y == 0.0))
 			{
 				return false;
 			}
 
-			const double xh = (b.x - a.x);
-			const double yk = (b.y - a.y);
+			const double xh = (b.center.x - a.x);
+			const double yk = (b.center.y - a.y);
 
-			return (((xh * xh) / (b.a * b.a) + (yk * yk) / (b.b * b.b)) <= 1.0);
+			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
 		}
 
 		inline constexpr bool Intersect(const Point& a, const Triangle& b) noexcept
@@ -203,14 +223,14 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Vec2& a, const Rect& b) noexcept
 		{
-			return (b.x <= a.x) && (a.x < (b.x + b.w))
-				&& (b.y <= a.y) && (a.y < (b.y + b.h));
+			return (b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
+				&& (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y));
 		}
 
 		inline constexpr bool Intersect(const Vec2& a, const RectF& b) noexcept
 		{
-			return (b.x <= a.x) && (a.x < (b.x + b.w))
-				&& (b.y <= a.y) && (a.y < (b.y + b.h));
+			return (b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
+				&& (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y));
 		}
 
 		inline constexpr bool Intersect(const Vec2& a, const Circle& b) noexcept
@@ -220,14 +240,14 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Vec2& a, const Ellipse& b) noexcept
 		{
-			if ((b.a == 0.0) || (b.b == 0.0))
+			if ((b.axes.x == 0.0) || (b.axes.y == 0.0))
 			{
 				return false;
 			}
 
-			const double xh = (b.x - a.x);
-			const double yk = (b.y - a.y);
-			return (((xh * xh) / (b.a * b.a) + (yk * yk) / (b.b * b.b)) <= 1.0);
+			const double xh = (b.center.x - a.x);
+			const double yk = (b.center.y - a.y);
+			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
 		}
 
 		inline constexpr bool Intersect(const Vec2& a, const Triangle& b) noexcept
@@ -296,18 +316,18 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Rect& a, const Rect& b) noexcept
 		{
-			return (a.x < (b.x + b.w))
-				&& (b.x < (a.x + a.w))
-				&& (a.y < (b.y + b.h))
-				&& (b.y < (a.y + a.h));
+			return (a.pos.x < (b.pos.x + b.size.x))
+				&& (b.pos.x < (a.pos.x + a.size.x))
+				&& (a.pos.y < (b.pos.y + b.size.y))
+				&& (b.pos.y < (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Intersect(const Rect& a, const RectF& b) noexcept
 		{
-			return (a.x < (b.x + b.w))
-				&& (b.x < (a.x + a.w))
-				&& (a.y < (b.y + b.h))
-				&& (b.y < (a.y + a.h));
+			return (a.pos.x < (b.pos.x + b.size.x))
+				&& (b.pos.x < (a.pos.x + a.size.x))
+				&& (a.pos.y < (b.pos.y + b.size.y))
+				&& (b.pos.y < (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Intersect(const RectF& a, const Point& b) noexcept
@@ -337,10 +357,10 @@ namespace s3d
 
 		inline constexpr bool Intersect(const RectF& a, const RectF& b) noexcept
 		{
-			return (a.x < (b.x + b.w))
-				&& (b.x < (a.x + a.w))
-				&& (a.y < (b.y + b.h))
-				&& (b.y < (a.y + a.h));
+			return (a.pos.x < (b.pos.x + b.size.x))
+				&& (b.pos.x < (a.pos.x + a.size.x))
+				&& (a.pos.y < (b.pos.y + b.size.y))
+				&& (b.pos.y < (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Intersect(const Rect& a, const Circle& b) noexcept
@@ -355,10 +375,10 @@ namespace s3d
 
 		inline constexpr bool Intersect(const RectF& a, const Circle& b) noexcept
 		{
-			const double aw = (a.w * 0.5);
-			const double ah = (a.h * 0.5);
-			const double cX = Abs(b.x - a.x - aw);
-			const double cY = Abs(b.y - a.y - ah);
+			const double aw = (a.size.x * 0.5);
+			const double ah = (a.size.y * 0.5);
+			const double cX = Abs(b.center.x - a.pos.x - aw);
+			const double cY = Abs(b.center.y - a.pos.y - ah);
 
 			if ((cX > (aw + b.r))
 				|| (cY > (ah + b.r)))
@@ -412,7 +432,7 @@ namespace s3d
 
 		inline constexpr bool Intersect(const Circle& a, const Circle& b) noexcept
 		{
-			return (((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)) <= ((a.r + b.r) * (a.r + b.r)));
+			return (((a.center.x - b.center.x) * (a.center.x - b.center.x) + (a.center.y - b.center.y) * (a.center.y - b.center.y)) <= ((a.r + b.r) * (a.r + b.r)));
 		}
 
 		inline constexpr bool Intersect(const Ellipse& a, const Point& b) noexcept
@@ -1080,18 +1100,18 @@ namespace s3d
 
 		inline constexpr bool Contains(const Rect& a, const Rect& b) noexcept
 		{
-			return (a.x <= b.x)
-				&& (a.y <= b.y)
-				&& ((b.x + b.w) <= (a.x + a.w))
-				&& ((b.y + b.h) <= (a.y + a.h));
+			return (a.pos.x <= b.pos.x)
+				&& (a.pos.y <= b.pos.y)
+				&& ((b.pos.x + b.size.x) <= (a.pos.x + a.size.x))
+				&& ((b.pos.y + b.size.y) <= (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Contains(const Rect& a, const RectF& b) noexcept
 		{
-			return (a.x <= b.x)
-				&& (a.y <= b.y)
-				&& ((b.x + b.w) <= (a.x + a.w))
-				&& ((b.y + b.h) <= (a.y + a.h));
+			return (a.pos.x <= b.pos.x)
+				&& (a.pos.y <= b.pos.y)
+				&& ((b.pos.x + b.size.x) <= (a.pos.x + a.size.x))
+				&& ((b.pos.y + b.size.y) <= (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Contains(const Rect& a, const Circle& b) noexcept
@@ -1144,18 +1164,18 @@ namespace s3d
 
 		inline constexpr bool Contains(const RectF& a, const Rect& b) noexcept
 		{
-			return (a.x <= b.x)
-				&& (a.y <= b.y)
-				&& ((b.x + b.w) <= (a.x + a.w))
-				&& ((b.y + b.h) <= (a.y + a.h));
+			return (a.pos.x <= b.pos.x)
+				&& (a.pos.y <= b.pos.y)
+				&& ((b.pos.x + b.size.x) <= (a.pos.x + a.size.x))
+				&& ((b.pos.y + b.size.y) <= (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Contains(const RectF& a, const RectF& b) noexcept
 		{
-			return (a.x <= b.x)
-				&& (a.y <= b.y)
-				&& ((b.x + b.w) <= (a.x + a.w))
-				&& ((b.y + b.h) <= (a.y + a.h));
+			return (a.pos.x <= b.pos.x)
+				&& (a.pos.y <= b.pos.y)
+				&& ((b.pos.x + b.size.x) <= (a.pos.x + a.size.x))
+				&& ((b.pos.y + b.size.y) <= (a.pos.y + a.size.y));
 		}
 
 		inline constexpr bool Contains(const RectF& a, const Circle& b) noexcept
@@ -1732,11 +1752,14 @@ namespace s3d
 		template <class PointType>
 		inline constexpr bool IsClockwise(const PointType& p0, const PointType& p1, const PointType& p2) noexcept
 		{
-			typename PointType::value_type sum = 0;
-			sum += ((p1.x - p0.x) * (p1.y + p0.y));
-			sum += ((p2.x - p1.x) * (p2.y + p1.y));
-			sum += ((p0.x - p2.x) * (p0.y + p2.y));
-			return (sum < 0);
+			if constexpr (std::is_same_v<typename PointType::value_type, int32>)
+			{
+				return (0 < (static_cast<int64>(p1.x - p0.x) * static_cast<int64>(p2.y - p0.y) - static_cast<int64>(p2.x - p0.x) * static_cast<int64>(p1.y - p0.y)));
+			}
+			else
+			{
+				return (0 < ((p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y)));
+			}
 		}
 
 		template <class PointType>
@@ -1748,6 +1771,94 @@ namespace s3d
 			sum += ((p3.x - p2.x) * (p3.y + p2.y));
 			sum += ((p0.x - p3.x) * (p0.y + p3.y));
 			return (sum < 0);
+		}
+		
+		//////////////////////////////////////////////////
+		//
+		//	SmallestEnclosingCircle
+		//
+		//////////////////////////////////////////////////
+	        //-----------------------------------------------
+	        //    Authors (OpenSiv3D challenge #19)
+	        //    - あぷりばーど
+	        //    - Nachia
+	        //    - Luke256
+	        //    - ラクラムシ
+	        //    - polyester
+	        //    - sasa
+	        //-----------------------------------------------
+
+		SIV3D_CONCEPT_URBG_
+		Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg)
+		{
+			if (points.size() == 0)
+			{
+				return Circle{};
+			}
+
+			if (points.size() == 1)
+			{
+				return Circle{ points[0], 0.0 };
+			}
+
+			if (points.size() == 2)
+			{
+				return Circle{ points[0], points[1] };
+			}
+
+			if (points.size() == 3)
+			{
+				return SmallestEnclosingCircle(points[0], points[1], points[2]);
+			}
+
+			if (points.size() == 4)
+			{
+				return SmallestEnclosingCircle(points[0], points[1], points[2], points[3], tolerance);
+			}
+
+			points.shuffle(std::forward<URBG>(urbg));
+
+			// 適当な 1 点を含む最小包含円から始めて、少しずつ広げていく戦略を取る。
+			// 含まれない点があったら、それが境界上になるように新たに取り直す。
+			Circle circle{ points[0], 0.0 };
+
+			for (size_t i = 1; i < points.size(); ++i)
+			{
+				const Vec2& p0 = points[i];
+
+				if (not detail::Contains(circle, p0, tolerance))
+				{
+					circle = Circle{ p0, 0.0 };
+
+					for (size_t j = 0; j < i; ++j)
+					{
+						const Vec2& p1 = points[j];
+						
+						if (not detail::Contains(circle, p1, tolerance))
+						{
+							circle = Circle{ p0, p1 };
+
+							for (size_t k = 0; k < j; ++k)
+							{
+								const Vec2& p2 = points[k];
+								
+								if (not detail::Contains(circle, p2, tolerance))
+								{
+									circle = Triangle(p0, p1, p2).getCircumscribedCircle();
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return circle;
+		}
+
+		SIV3D_CONCEPT_URBG_
+		Circle SmallestEnclosingCircle(Array<Vec2> points, URBG&& urbg, double tolerance)
+		{
+			return SmallestEnclosingCircle(std::move(points), tolerance, std::forward<URBG>(urbg));
 		}
 	}
 }

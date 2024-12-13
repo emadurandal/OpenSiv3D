@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -19,6 +19,7 @@
 
 namespace s3d
 {
+	/// @brief テクスチャフォーマット
 	class TextureFormat
 	{
 	public:
@@ -32,6 +33,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr TexturePixelFormat value() const noexcept;
 
+		/// @brief フォーマットの名前を返します（例: R8G8B8A8_Unorm）
+		/// @return フォーマットの名前
 		[[nodiscard]]
 		StringView name() const noexcept;
 
@@ -50,11 +53,13 @@ namespace s3d
 		[[nodiscard]]
 		int32 WGPUFormat() const noexcept;
 
-		// 1 ピクセル当たりのサイズ
+		/// @brief 1 ピクセル当たりのサイズ（バイト）を返します。
+		/// @return 1 ピクセル当たりのサイズ（バイト）
 		[[nodiscard]]
 		uint32 pixelSize() const noexcept;
 
-		// チャンネル数
+		/// @brief チャンネル数を返します。
+		/// @return チャンネル数
 		[[nodiscard]]
 		uint32 num_channels() const noexcept;
 
@@ -120,6 +125,8 @@ namespace s3d
 		static constexpr TexturePixelFormat R8G8B8A8_Unorm = TexturePixelFormat::R8G8B8A8_Unorm;
 
 		static constexpr TexturePixelFormat R8G8B8A8_Unorm_SRGB = TexturePixelFormat::R8G8B8A8_Unorm_SRGB;
+
+		static constexpr TexturePixelFormat R16G16_Unorm = TexturePixelFormat::R16G16_Unorm;
 
 		static constexpr TexturePixelFormat R16G16_Float = TexturePixelFormat::R16G16_Float;
 

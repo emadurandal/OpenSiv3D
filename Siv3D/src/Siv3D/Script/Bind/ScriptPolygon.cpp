@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -112,16 +112,16 @@ namespace s3d
 		return static_cast<bool>(polygon);
 	}
 
-	static Polygon& AddHole(const CScriptArray* hole, bool skipValidation, Polygon& polygon)
+	static bool AddHole(const CScriptArray* hole, Polygon& polygon)
 	{
-		return polygon.addHole(detail::FromScriptArray<Vec2>(hole), SkipValidation{ skipValidation });
+		return polygon.addHole(detail::FromScriptArray<Vec2>(hole));
 	}
 
 	void RegisterPolygon(asIScriptEngine* engine)
 	{
 		constexpr char TypeName[] = "Polygon";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(DefaultConstruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_CONSTRUCT, "void f(const Polygon& in)", asFUNCTION(CopyConstruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(Destruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
@@ -149,35 +149,41 @@ namespace s3d
 		r = engine->RegisterObjectMethod(TypeName, "size_t num_triangles() const", asMETHODPR(ShapeType, num_triangles, () const, size_t), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Triangle triangle(size_t) const", asMETHODPR(ShapeType, triangle, (size_t) const, Triangle), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon& addHole(const Array<Vec2>& in, bool skipValidation = SkipValidation::No) const", asFUNCTION(AddHole), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const RectF& in) const", asMETHODPR(ShapeType, addHole, (const RectF&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Triangle& in) const", asMETHODPR(ShapeType, addHole, (const Triangle&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Quad& in) const", asMETHODPR(ShapeType, addHole, (const Quad&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Circle& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const Circle&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Ellipse& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const Ellipse&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const RoundRect& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const RoundRect&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Array<Vec2>& in) const", asFUNCTION(AddHole), asCALL_CDECL_OBJLAST); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(double, double) const", asMETHODPR(ShapeType, movedBy, (double, double) const, Polygon), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(Vec2) const", asMETHODPR(ShapeType, movedBy, (Vec2) const, Polygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(double, double) const", asMETHODPR(ShapeType, movedBy, (double, double) const&, Polygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(Vec2) const", asMETHODPR(ShapeType, movedBy, (Vec2) const&, Polygon), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& moveBy(double, double)", asMETHODPR(ShapeType, moveBy, (double, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& moveBy(Vec2)", asMETHODPR(ShapeType, moveBy, (Vec2), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon rotated(double) const", asMETHODPR(ShapeType, rotated, (double) const, Polygon), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon rotatedAt(double, double, double) const", asMETHODPR(ShapeType, rotatedAt, (double, double, double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon rotatedAt(Vec2, double) const", asMETHODPR(ShapeType, rotatedAt, (Vec2, double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon rotated(double) const", asMETHODPR(ShapeType, rotated, (double) const&, Polygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon rotatedAt(double, double, double) const", asMETHODPR(ShapeType, rotatedAt, (double, double, double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon rotatedAt(Vec2, double) const", asMETHODPR(ShapeType, rotatedAt, (Vec2, double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& rotate(double)", asMETHODPR(ShapeType, rotate, (double), Polygon&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& rotateAt(double, double, double)", asMETHODPR(ShapeType, rotateAt, (double, double, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& rotateAt(Vec2, double)", asMETHODPR(ShapeType, rotateAt, (Vec2, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon transformed(double s, double c, const Vec2& in) const", asMETHODPR(ShapeType, transformed, (double, double, const Vec2&) const, Polygon), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon transformed(double s, double c, const Vec2& in) const", asMETHODPR(ShapeType, transformed, (double, double, const Vec2&) const&, Polygon), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& transform(double s, double c, const Vec2& in)", asMETHODPR(ShapeType, transform, (double, double, const Vec2&), Polygon&), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(double s) const", asMETHODPR(ShapeType, scaled, (double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(double sx, double sy) const", asMETHODPR(ShapeType, scaled, (double, double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(Vec2) const", asMETHODPR(ShapeType, scaled, (Vec2) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(double s) const", asMETHODPR(ShapeType, scaled, (double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(double sx, double sy) const", asMETHODPR(ShapeType, scaled, (double, double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaled(Vec2) const", asMETHODPR(ShapeType, scaled, (Vec2) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& scale(double s)", asMETHODPR(ShapeType, scale, (double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& scale(double sx, double sy)", asMETHODPR(ShapeType, scale, (double, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& scale(Vec2)", asMETHODPR(ShapeType, scale, (Vec2), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, double s) const", asMETHODPR(ShapeType, scaledAt, (Vec2, double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, double sx, double sy) const", asMETHODPR(ShapeType, scaledAt, (Vec2, double, double) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
-		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, Vec2) const", asMETHODPR(ShapeType, scaledAt, (Vec2, Vec2) const, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, double s) const", asMETHODPR(ShapeType, scaledAt, (Vec2, double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, double sx, double sy) const", asMETHODPR(ShapeType, scaledAt, (Vec2, double, double) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Polygon scaledAt(Vec2, Vec2) const", asMETHODPR(ShapeType, scaledAt, (Vec2, Vec2) const&, ShapeType), asCALL_THISCALL); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& scaleAt(Vec2, double s)", asMETHODPR(ShapeType, scaleAt, (Vec2, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon& scaleAt(Vec2, double sx, double sy)", asMETHODPR(ShapeType, scaleAt, (Vec2, double, double), ShapeType&), asCALL_THISCALL); assert(r >= 0);

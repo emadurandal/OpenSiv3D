@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -419,7 +419,7 @@ namespace s3d
 		{
 			if (not path) [[unlikely]]
 			{
-				return 0;
+				return{};
 			}
 
 			if (IsResourcePath(path))
@@ -436,6 +436,11 @@ namespace s3d
 			}
 
 			return Unicode::FromWstring(result).replace(U'\\', U'/');
+		}
+
+		FilePath PathAppend(const FilePathView lhs, const FilePathView rhs)
+		{
+			return FilePath{ (detail::ToPath(lhs) / detail::ToPath(rhs)).u32string() }.replace(U'\\', U'/');
 		}
 
 		bool IsEmptyDirectory(const FilePathView path)
@@ -688,7 +693,7 @@ namespace s3d
 		{
 			if (not path)
 			{
-				return false;
+				return true;
 			}
 
 			if (IsResourcePath(path))

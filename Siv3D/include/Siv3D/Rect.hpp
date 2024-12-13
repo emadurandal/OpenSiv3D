@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -67,9 +67,11 @@ namespace s3d
 			struct
 			{
 				/// @brief 長方形の幅
+				/// @remark この値が負の時の挙動は未規定です。
 				value_type w;
 
 				/// @brief 長方形の高さ
+				/// @remark この値が負の時の挙動は未規定です。
 				value_type h;
 			};
 		};
@@ -470,27 +472,81 @@ namespace s3d
 
 		constexpr Rect& set(Arg::leftCenter_<position_type> leftCenter, size_type _size) noexcept;
 
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return 新しい長方形
 		[[nodiscard]]
 		constexpr Rect movedBy(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 座標を移動した新しい長方形を返します。
+		/// @param v 移動量
+		/// @return 新しい長方形
 		[[nodiscard]]
 		constexpr Rect movedBy(size_type v) const noexcept;
 
+		/// @brief 長方形を移動させます。
+		/// @param _x X 軸方向の移動量
+		/// @param _y Y 軸方向の移動量
+		/// @return *this
 		constexpr Rect& moveBy(value_type _x, value_type _y) noexcept;
 
+		/// @brief 長方形を移動させます。
+		/// @param v 移動量
+		/// @return *this
 		constexpr Rect& moveBy(size_type v) noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type xy) const noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
+		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(size_type xy) const noexcept;
 
+		/// @brief 上下左右方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @param right 右方向の拡大縮小量
+		/// @param bottom 下方向の拡大縮小量
+		/// @param left 左方向の拡大縮小量
+		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type top, value_type right, value_type bottom, value_type left) const noexcept;
+
+		/// @brief 上方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @return 上方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::top_<value_type> top) const noexcept;
+
+		/// @brief 右方向に拡大縮小した長方形を返します。
+		/// @param right 右方向の拡大縮小量
+		/// @return 右方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::right_<value_type> right) const noexcept;
+
+		/// @brief 下方向に拡大縮小した長方形を返します。
+		/// @param bottom 下方向の拡大縮小量
+		/// @return 下方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::bottom_<value_type> bottom) const noexcept;
+
+		/// @brief 左方向に拡大縮小した長方形を返します。
+		/// @param left 左方向の拡大縮小量
+		/// @return 左方向に拡大縮小した長方形
+		[[nodiscard]]
+		constexpr Rect stretched(Arg::left_<value_type> left) const noexcept;
 
 		[[nodiscard]]
 		constexpr RectF scaled(double s) const noexcept;
@@ -510,10 +566,51 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF scaledAt(Vec2 _pos, Vec2 s) const noexcept;
 
+		/// @brief 長方形が空でないかを返します。
+		/// @remark `hasArea()` と同じです。
+		/// @return 長方形が空でない場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr explicit operator bool() const noexcept;
+
+		/// @brief 長方形が空であるかを返します。
+		/// @return 空の長方形である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept;
+
 		/// @brief 長方形が大きさを持っているかを返します。
 		/// @return 長方形が大きさを持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool hasArea() const noexcept;
+
+		/// @brief 長方形の左辺の X 座標を返します。
+		/// @return 長方形の左辺の X 座標
+		[[nodiscard]]
+		constexpr value_type leftX() const noexcept;
+
+		/// @brief 長方形の右辺の X 座標を返します。
+		/// @return 長方形の右辺の X 座標
+		[[nodiscard]]
+		constexpr value_type rightX() const noexcept;
+
+		/// @brief 長方形の上辺の Y 座標を返します。
+		/// @return 長方形の上辺の Y 座標
+		[[nodiscard]]
+		constexpr value_type topY() const noexcept;
+
+		/// @brief 長方形の下辺の Y 座標を返します。
+		/// @return 長方形の下辺の Y 座標
+		[[nodiscard]]
+		constexpr value_type bottomY() const noexcept;
+
+		/// @brief 長方形の中心の X 座標を返します。
+		/// @return 長方形の中心の X 座標
+		[[nodiscard]]
+		constexpr double centerX() const noexcept;
+
+		/// @brief 長方形の中心の Y 座標を返します。
+		/// @return 長方形の中心の Y 座標
+		[[nodiscard]]
+		constexpr double centerY() const noexcept;
 
 		/// @brief 長方形の左上の座標を返します。
 		/// @return 長方形の左上の座標
@@ -525,13 +622,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr size_type tr() const noexcept;
 
-		/// @brief 長方形の左下の座標を返します。
-		/// @return 長方形の左下の座標
+		/// @brief 長方形の右下の座標を返します。
+		/// @return 長方形の右下の座標
 		[[nodiscard]]
 		constexpr size_type br() const noexcept;
 
-		/// @brief 長方形の右下の座標を返します。
-		/// @return 長方形の右下の座標
+		/// @brief 長方形の左下の座標を返します。
+		/// @return 長方形の左下の座標
 		[[nodiscard]]
 		constexpr size_type bl() const noexcept;
 
@@ -559,6 +656,13 @@ namespace s3d
 		/// @return 長方形の中心座標
 		[[nodiscard]]
 		constexpr Vec2 center() const noexcept;
+
+		/// @brief 長方形の左上を (0 ,0), 右下を (1, 1) としたときの (relativeX, relativeY) の座標を返します。
+		/// @param relativeX X 座標の相対的な位置
+		/// @param relativeY Y 座標の相対的な位置
+		/// @return 長方形の左上を (0 ,0), 右下を (1, 1) としたときの (relativeX, relativeY) の座標
+		[[nodiscard]]
+		constexpr Vec2 getRelativePoint(double relativeX, double relativeY) const noexcept;
 
 		/// @brief 長方形の上辺を Line として返します。
 		/// @return 長方形の上辺
@@ -599,6 +703,10 @@ namespace s3d
 		[[nodiscard]]
 		constexpr value_type perimeter() const noexcept;
 
+		template <class Type = double>
+		[[nodiscard]]
+		constexpr Type horizontalAspectRatio() const noexcept;
+
 		[[nodiscard]]
 		Quad rotated(double angle) const noexcept;
 
@@ -608,6 +716,19 @@ namespace s3d
 		[[nodiscard]]
 		Quad rotatedAt(Vec2 _pos, double angle) const noexcept;
 
+		/// @brief _posを中心とし、時計回りに 90°* n 回転した長方形を返します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return _posを中心とし、時計回りに 90°* n 回転した長方形
+		[[nodiscard]]
+		constexpr Rect rotated90At(const position_type& _pos, int32 n = 1) const noexcept;
+
+		/// @brief _posを中心とし、自身を時計回りに 90°* n 回転します。
+		/// @param _pos 回転の中心座標
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		constexpr Rect& rotate90At(const position_type& _pos, int32 n = 1) noexcept;
+
 		[[nodiscard]]
 		constexpr Quad shearedX(double vx) const noexcept;
 
@@ -615,10 +736,34 @@ namespace s3d
 		constexpr Quad shearedY(double vy) const noexcept;
 
 		[[nodiscard]]
+		Quad skewedX(double angle) const noexcept;
+
+		[[nodiscard]]
+		Quad skewedY(double angle) const noexcept;
+
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param r 角の半径
+		/// @return 作成した RoundRect
+		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
 		[[nodiscard]]
-		Polygon rounded(double tl, double tr, double br, double bl) const noexcept;
+		Polygon rounded(double tl, double tr, double br, double bl) const;
+
+		/// @brief 長方形を面取りした Polygon を返します。
+		/// @param size 面取りの大きさ
+		/// @return 面取りした Polygon
+		[[nodiscard]]
+		Polygon chamfered(double size) const;
+
+		/// @brief 長方形を面取りした Polygon を返します。
+		/// @param tl 左上の面取りの大きさ
+		/// @param tr 右上の面取りの大きさ
+		/// @param br 右下の面取りの大きさ
+		/// @param bl 左下の面取りの大きさ
+		/// @return 面取りした Polygon
+		[[nodiscard]]
+		Polygon chamfered(double tl, double tr, double br, double bl) const;
 
 		/// @brief 長方形を Quad として返します。
 		/// @return 長方形の Quad
@@ -648,6 +793,18 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr RectF lerp(const RectF& other, double f) const noexcept;
+
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr Rect getOverlap(const Rect& other) const noexcept;
+
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr RectF getOverlap(const RectF& other) const noexcept;
 
 		[[nodiscard]]
 		size_t hash() const noexcept;
@@ -732,6 +889,20 @@ namespace s3d
 		/// @return *this
 		const Rect& draw(Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
 
+		/// @brief 長方形を描画します。
+		/// @param topLeftColor 長方形の左上の色
+		/// @param bottomRightColor 長方形の右下の色
+		/// @remark `rect.draw(Arg::topLeft = ColorF{ 0.0 }, Arg::bottomRight = ColorF{ 1.0 })` のように呼びます。
+		/// @return *this
+		const Rect& draw(Arg::topLeft_<ColorF> topLeftColor, Arg::bottomRight_<ColorF> bottomRightColor) const;
+
+		/// @brief 長方形を描画します。
+		/// @param topRightColor 長方形の右上の色
+		/// @param bottomLeftColor 長方形の左下の色
+		/// @remark `rect.draw(Arg::topRight = ColorF{ 0.0 }, Arg::bottomLeft = ColorF{ 1.0 })` のように呼びます。
+		/// @return 
+		const Rect& draw(Arg::topRight_<ColorF> topRightColor, Arg::bottomLeft_<ColorF> bottomLeftColor) const;
+
 		/// @brief 長方形の枠を描画します。
 		/// @param thickness 枠の太さ
 		/// @param color 色
@@ -744,6 +915,13 @@ namespace s3d
 		/// @param outerColor 外側寄りの枠の色
 		/// @return *this
 		const Rect& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
+		
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const Rect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描画します。
 		/// @param innerThickness 内側寄りの枠の太さ
@@ -760,13 +938,22 @@ namespace s3d
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
 		/// @brief 長方形の影を描画します。
 		/// @param offset 影の位置のオフセット（ピクセル）
-		/// @param blurRadius 影のぼかし半径（ピクセル）
+		/// @param blur ぼかしの大きさ（ピクセル）
 		/// @param spread 影の膨張（ピクセル）
 		/// @param color 影の色
+		/// @param fill 影の内部を塗りつぶすか
 		/// @return *this
-		const Rect& drawShadow(const Vec2& offset, double blurRadius, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
+		const Rect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		[[nodiscard]]
 		TexturedQuad operator ()(const Texture& texture) const;
@@ -774,6 +961,15 @@ namespace s3d
 		[[nodiscard]]
 		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
+		/// @brief 空の長方形を返します。
+		/// @return 空の長方形 (`Rect{ 0, 0, 0, 0 }`)
+		[[nodiscard]]
+		static constexpr Rect Empty() noexcept;
+
+		/// @brief 対角線上の 2 点の座標をもとに長方形を作成します。
+		/// @param a 対角線をなす座標の 1 つ
+		/// @param b 対角線をなす座標の 1 つ
+		/// @return 作成した長方形
 		[[nodiscard]]
 		static constexpr Rect FromPoints(position_type a, position_type b) noexcept;
 

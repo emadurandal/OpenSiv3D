@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,6 +13,25 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		template <class Type>
+		class StableUniqueHelper
+		{
+		private:
+
+			std::unordered_set<Type> m_set;
+
+		public:
+
+			[[nodiscard]]
+			bool operator()(const Type& value)
+			{
+				return m_set.insert(value).second;
+			}
+		};
+	}
+
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator>::Array(const container_type& other)
 		: m_container(other) {}
@@ -318,9 +337,9 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline void Array<Type, Allocator>::reserve(const size_type new_cap)
+	inline void Array<Type, Allocator>::reserve(const size_type n)
 	{
-		m_container.reserve(new_cap);
+		m_container.reserve(n);
 	}
 
 	template<class Type, class Allocator>
@@ -550,28 +569,28 @@ namespace s3d
 	SIV3D_CONCEPT_URBG_
 	inline typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(URBG&& rbg)
 	{
-		if (empty())
+		const size_t size = m_container.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Array::choice(): Array is empty");
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>
 	SIV3D_CONCEPT_URBG_
 	inline const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(URBG&& rbg) const
 	{
-		if (empty())
+		const size_t size = m_container.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Array::choice(): Array is empty");
+			throw std::out_of_range{ "Array::choice(): Array is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>
@@ -613,6 +632,19 @@ namespace s3d
 		}
 
 		return result;
+	}
+
+	template <class Type, class Allocator>
+	inline bool Array<Type, Allocator>::contains(const value_type& value) const
+	{
+		return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>*>
+	inline bool Array<Type, Allocator>::contains_if(Fty f) const
+	{
+		return any(f);
 	}
 
 	template <class Type, class Allocator>
@@ -681,11 +713,12 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::fetch(const size_t index, const value_type& defaultValue) const
+	template <class U>
+	inline typename Array<Type, Allocator>::value_type Array<Type, Allocator>::fetch(const size_t index, U&& defaultValue) const
 	{
 		if (index >= size())
 		{
-			return defaultValue;
+			return std::forward<U>(defaultValue);
 		}
 
 		return operator[](index);
@@ -745,15 +778,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline bool Array<Type, Allocator>::includes(const value_type& value) const
 	{
-		for (const auto& v : *this)
-		{
-			if (v == value)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
 	}
 
 	template <class Type, class Allocator>
@@ -817,6 +842,13 @@ namespace s3d
 	inline bool Array<Type, Allocator>::none(Fty f) const
 	{
 		return std::none_of(begin(), end(), f);
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>*>
+	auto Array<Type, Allocator>::partition(Fty f)
+	{
+		return std::partition(begin(), end(), f);
 	}
 
 	template <class Type, class Allocator>
@@ -903,7 +935,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) const
+	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) const&
 	{
 		if (index >= size())
 		{
@@ -917,6 +949,12 @@ namespace s3d
 		new_array.insert(new_array.end(), begin() + index + 1, end());
 
 		return new_array;
+	}
+
+	template <class Type, class Allocator>
+	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) &&
+	{
+		return std::move(remove_at(index));
 	}
 
 	template <class Type, class Allocator>
@@ -1123,7 +1161,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator> Array<Type, Allocator>::rotated(const std::ptrdiff_t count) const&
 	{
-		return Array(*this).rotate(count);
+		Array result{ *this };
+		result.rotate(count);
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1147,7 +1187,9 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasGreaterThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::rsorted() const&
 	{
-		return Array(*this).rsort();
+		Array result{ *this };
+		result.rsort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1183,14 +1225,16 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator> Array<Type, Allocator>::shuffled()&&
 	{
-		return shuffled(GetDefaultRNG());
+		return std::move(*this).shuffled(GetDefaultRNG());
 	}
 
 	template <class Type, class Allocator>
 	SIV3D_CONCEPT_URBG_
 	inline Array<Type, Allocator> Array<Type, Allocator>::shuffled(URBG&& rbg) const&
 	{
-		return Array(*this).shuffle(std::forward<URBG>(rbg));
+		Array result{ *this };
+		result.shuffle(std::forward<URBG>(rbg));
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1264,14 +1308,25 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted() const&
 	{
-		return Array(*this).sort();
+		Array result{ *this };
+		result.sort();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>*>
+	auto Array<Type, Allocator>::stable_partition(Fty f)
+	{
+		return std::stable_partition(begin(), end(), f);
 	}
 
 	template <class Type, class Allocator>
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const&
 	{
-		return Array(*this).stable_sort();
+		Array result{ *this };
+		result.stable_sort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1296,14 +1351,18 @@ namespace s3d
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const&
 	{
-		return Array(*this).sort_by(f);
+		Array result{ *this };
+		result.sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const&
 	{
-		return Array(*this).stable_sort_by(f);
+		Array result{ *this };
+		result.stable_sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1383,7 +1442,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
+	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const&
 	{
 		Array result;
 
@@ -1392,6 +1451,14 @@ namespace s3d
 		std::copy_if(begin(), end(), std::back_inserter(result), std::ref(pred));
 
 		return result;
+	}
+
+	template <class Type, class Allocator>
+	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() &&
+	{
+		// stable_unique() が最適化されたら次の実装に変更する
+		// return std::move(stable_unique());
+		return stable_uniqued();
 	}
 
 	template <class Type, class Allocator>
@@ -1407,7 +1474,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() const&
 	{
-		return Array(*this).sort_and_unique();
+		Array result{ *this };
+		result.sort_and_unique();
+		return result;
 	}
 
 	template <class Type, class Allocator>

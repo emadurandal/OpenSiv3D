@@ -2,14 +2,15 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/TextInput.hpp>
+# include <Siv3D/Char.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Indexed.hpp>
 # include <Siv3D/DrawableText.hpp>
@@ -113,6 +114,11 @@ namespace s3d
 			return SIV3D_ENGINE(TextInput)->getCandidates();
 		}
 
+		const s3d::TextInput::CandidateState& GetCandidateState()
+		{
+			return SIV3D_ENGINE(TextInput)->getCandidateState();
+		}
+
 		std::pair<int32, int32> GetCursorIndex()
 		{
 			return SIV3D_ENGINE(TextInput)->getCursorIndex();
@@ -130,7 +136,7 @@ namespace s3d
 			const auto[editingCursorIndex, editingTargetlength] = GetCursorIndex();
 			const bool hasEditingTarget = (editingTargetlength > 0);
 			const String editingTargetText = editingText.substr(editingCursorIndex, editingTargetlength);
-			const auto cadidates = GetCandidates();
+			const auto& cadidates = GetCandidates();
 			const double candidateItemHeight = font.height() + candidatesMargin;
 
 			double boxWidth = 0.0;
@@ -203,21 +209,5 @@ namespace s3d
 			return SIV3D_ENGINE(TextInput)->getEditingTextStyle();
 		}
 	}
-
-# elif SIV3D_PLATFORM(WEB)
-
-	namespace Platform::Web::TextInput
-	{
-		void RequestEnableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(true);
-		}
-
-		void RequestDisableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(false);
-		}
-	}
-
 # endif
 }

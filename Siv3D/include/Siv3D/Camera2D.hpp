@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -55,6 +55,8 @@ namespace s3d
 		/// @remark カメラは一定の時間をかけて目標の座標に移動します。
 		void setTargetCenter(Vec2 targetCenter) noexcept;
 
+		/// @brief 現在の目標中心座標を返します。
+		/// @return 現在の目標中心座標
 		const Vec2& getTargetCenter() const noexcept;
 
 		/// @brief カメラのズームアップ倍率の目標を設定します。
@@ -62,6 +64,8 @@ namespace s3d
 		/// @remark カメラは一定の時間をかけて目標のズーム倍率になります。
 		void setTargetScale(double targetScale) noexcept;
 
+		/// @brief 現在の目標ズームアップ倍率を返します。
+		/// @return 現在の目標ズームアップ倍率
 		double getTargetScale() const noexcept;
 
 		/// @brief 指定した中心座標とズーム倍率を即座に適用します。
@@ -78,6 +82,11 @@ namespace s3d
 		/// @param color UI の色
 		void draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 右クリックによる移動の開始座標を返します。
+		/// @return 右クリックによる移動の開始座標。右クリックによる移動が開始されていない場合は none
+		[[nodiscard]]
+		const Optional<Vec2>& getGrabbedPos() const noexcept;
+
 	protected:
 
 		double m_targetScale = BasicCamera2D::m_scale;
@@ -88,9 +97,9 @@ namespace s3d
 
 		Vec2 m_positionChangeVelocity = Vec2::Zero();
 
-		Optional<Point> m_grabPos;
+		Optional<Vec2> m_grabbedPos;
 
-		Optional<std::pair<Point, Vec2>> m_pointedScale;
+		Optional<std::pair<Vec2, Vec2>> m_pointedScale;
 
 		Camera2DParameters m_parameters;
 

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -55,9 +55,14 @@ cbuffer VSPerObject : register(b2)
 	row_major float4x4 g_localToWorld;
 }
 
+cbuffer VSPerMaterial : register(b3)
+{
+	float4 g_uvTransform;
+}
+
 cbuffer PSPerFrame : register(b0)
 {
-	float3 g_gloablAmbientColor;
+	float3 g_globalAmbientColor;
 	float3 g_sunColor;
 	float3 g_sunDirection;
 }
@@ -69,7 +74,7 @@ cbuffer PSPerView : register(b1)
 
 cbuffer PSPerMaterial : register(b3)
 {
-	float3 g_amibientColor;
+	float3 g_ambientColor;
 	uint   g_hasTexture;
 	float4 g_diffuseColor;
 	float3 g_specularColor;
@@ -84,13 +89,14 @@ s3d::PSInput VS(s3d::VSInput input)
 {
 	s3d::PSInput result;
 
-	const float height = g_texture0.SampleLevel(g_sampler0, input.uv, 0).r;
+	const float2 uv = (input.uv * g_uvTransform.xy + g_uvTransform.zw);
+	const float height = g_texture0.SampleLevel(g_sampler0, uv, 0).r;
 	const float4 pos = float4(input.position.x, height, input.position.zw);
 	const float4 worldPosition = mul(pos, g_localToWorld);
 
 	result.position			= mul(worldPosition, g_worldToProjected);
 	result.worldPosition	= worldPosition.xyz;
-	result.uv				= input.uv;
+	result.uv				= uv;
 	return result;
 }
 
@@ -142,7 +148,7 @@ float4 PS(s3d::PSInput input) : SV_TARGET
 	const float3 n = FetchNormal(input.uv);
 	const float3 l = lightDirection;
 	const float4 diffuseColor = TerrainTriplanar(input.worldPosition, n, 0.5f);
-	const float3 ambientColor = (g_amibientColor * g_gloablAmbientColor);
+	const float3 ambientColor = (g_ambientColor * g_globalAmbientColor);
 
 	// Diffuse
 	const float3 diffuseReflection = CalculateDiffuseReflection(n, l, lightColor, diffuseColor.rgb, ambientColor);

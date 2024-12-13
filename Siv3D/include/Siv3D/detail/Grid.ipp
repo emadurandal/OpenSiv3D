@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -129,6 +129,8 @@ namespace s3d
 	inline void Grid<Type, Allocator>::assign(const size_type w, const size_type h, const value_type& value)
 	{
 		m_data.assign(w * h, value);
+		m_width = w;
+		m_height = h;
 	}
 
 	template <class Type, class Allocator>
@@ -136,7 +138,7 @@ namespace s3d
 	{
 		assert(0 <= size.x);
 		assert(0 <= size.y);
-		m_data.assign(size.x * size.y, value);
+		assign(size.x, size.y, value);
 	}
 
 	template <class Type, class Allocator>
@@ -144,7 +146,7 @@ namespace s3d
 	{
 		m_data.clear();
 
-		m_data.resize(std::max_element(set.begin(), set.end(),
+		resize(std::max_element(set.begin(), set.end(),
 			[](auto& lhs, auto& rhs) { return lhs.size() < rhs.size(); })->size(), set.size());
 
 		auto dst = begin();
@@ -204,7 +206,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::at(const Point pos)&&
 	{
-		return at(pos.y, pos.x);
+		return std::move(*this).at(pos.y, pos.x);
 	}
 
 	template <class Type, class Allocator>
@@ -609,7 +611,74 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h)
 	{
-		resize(w, h, value_type{});
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((w == 0) || (h == 0))
+		{
+			m_data.clear();
+			m_width = w;
+			m_height = h;
+			return;
+		}
+
+		const size_t oldWidth = m_width;
+		const size_t newWidth = w;
+		const size_t oldHeight = m_height;
+		const size_t newHeight = h;
+
+		// 元のサイズが 0 なら
+		if (m_data.isEmpty())
+		{
+			m_data.resize(newWidth * newHeight);
+			m_width = newWidth;
+			m_height = newHeight;
+			return;
+		}
+
+		// 高さが違う場合
+		if (oldHeight != newHeight)
+		{
+			m_data.resize(oldWidth * newHeight);
+			m_height = newHeight;
+		}
+
+		// 幅が違う場合
+		if (oldWidth != newWidth)
+		{
+			if (oldWidth < newWidth) // 幅を広くする場合
+			{
+				m_data.resize(newWidth * newHeight);
+
+				// swap による移動
+				for (size_t y = newHeight; 1 < y; --y)
+				{
+					auto fromEnd = (begin() + (y - 1) * oldWidth + oldWidth) - 1;
+					auto toEnd = (begin() + (y - 1) * newWidth + oldWidth) - 1;
+					
+					for (size_t i = 0; i < oldWidth; ++i)
+					{
+						std::swap(*(fromEnd--), *(toEnd--));
+					}
+				}
+			}
+			else if (newWidth < oldWidth) // 幅を狭くする場合
+			{
+				// swap による移動
+				for (size_t y = 1; y < newHeight; ++y)
+				{
+					auto from = (begin() + y * oldWidth);
+					auto to = (begin() + y * newWidth);
+
+					for (size_t i = 0; i < newWidth; ++i)
+					{
+						std::swap(*(from++), *(to++));
+					}
+				}
+
+				m_data.resize(newWidth * newHeight);
+			}
+
+			m_width = newWidth;
+		}
 	}
 
 	template <class Type, class Allocator>
@@ -621,22 +690,73 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h, const value_type& value)
 	{
-		if (m_width < w)
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((w == 0) || (h == 0))
 		{
-			insert_columns(m_width, (w - m_width), value);
-		}
-		else if (m_width > w)
-		{
-			remove_columns(w, (m_width - w));
+			m_data.clear();
+			m_width = w;
+			m_height = h;
+			return;
 		}
 
-		if (m_height < h)
+		const size_t oldWidth = m_width;
+		const size_t newWidth = w;
+		const size_t oldHeight = m_height;
+		const size_t newHeight = h;
+
+		// 元のサイズが 0 なら
+		if (m_data.isEmpty())
 		{
-			insert_rows(m_height, (h - m_height), value);
+			m_data.resize((newWidth * newHeight), value);
+			m_width = newWidth;
+			m_height = newHeight;
+			return;
 		}
-		else if (m_height > h)
+
+		// 高さが違う場合
+		if (oldHeight != newHeight)
 		{
-			remove_rows(h, (m_height - h));
+			m_data.resize((oldWidth * newHeight), value);
+			m_height = newHeight;
+		}
+
+		// 幅が違う場合
+		if (oldWidth != newWidth)
+		{
+			if (oldWidth < newWidth) // 幅を広くする場合
+			{
+				m_data.resize((newWidth * newHeight), value);
+
+				// swap による移動
+				for (size_t y = newHeight; 1 < y; --y)
+				{
+					auto fromEnd = (begin() + (y - 1) * oldWidth + oldWidth) - 1;
+					auto toEnd = (begin() + (y - 1) * newWidth + oldWidth) - 1;
+
+					for (size_t i = 0; i < oldWidth; ++i)
+					{
+						std::swap(*(fromEnd--), *(toEnd--));
+					}
+				}
+			}
+			else if (newWidth < oldWidth) // 幅を狭くする場合
+			{
+				// swap による移動
+				for (size_t y = 1; y < newHeight; ++y)
+				{
+					auto from = (begin() + y * oldWidth);
+					auto to = (begin() + y * newWidth);
+
+					for (size_t i = 0; i < newWidth; ++i)
+					{
+						std::swap(*(from++), *(to++));
+					}
+				}
+
+				m_data.resize(newWidth * newHeight);
+			}
+
+			m_width = newWidth;
 		}
 	}
 
@@ -692,28 +812,28 @@ namespace s3d
 	SIV3D_CONCEPT_URBG_
 	inline typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::choice(URBG&& rbg)
 	{
-		if (empty())
+		const size_t size = m_data.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Grid::choice(): Grid is empty");
+			throw std::out_of_range{ "Grid::choice(): Grid is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_data[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>
 	SIV3D_CONCEPT_URBG_
 	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::choice(URBG&& rbg) const
 	{
-		if (empty())
+		const size_t size = m_data.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Grid::choice(): Grid is empty");
+			throw std::out_of_range{ "Grid::choice(): Grid is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_data[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>
@@ -811,20 +931,22 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::fetch(const size_type y, const size_type x, const value_type& defaultValue) const
+	template <class U>
+	inline typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const size_type y, const size_type x, U&& defaultValue) const
 	{
 		if (not inBounds(y, x))
 		{
-			return defaultValue;
+			return std::forward<U>(defaultValue);
 		}
 
 		return m_data[y * m_width + x];
 	}
 
 	template <class Type, class Allocator>
-	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::fetch(const Point pos, const value_type& defaultValue) const
+	template <class U>
+	inline typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const Point pos, U&& defaultValue) const
 	{
-		return fetch(pos.y, pos.x, defaultValue);
+		return fetch(pos.y, pos.x, std::forward<U>(defaultValue));
 	}
 
 	template <class Type, class Allocator>
@@ -1059,7 +1181,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::rotated(const std::ptrdiff_t count) const&
 	{
-		return Grid(*this).rotate(count);
+		Grid result{ *this };
+		result.rotate(count);
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1085,7 +1209,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::rotated_rows(const std::ptrdiff_t count)&&
 	{
-		return rotated(count * static_cast<std::ptrdiff_t>(m_width));
+		return std::move(*this).rotated(count * static_cast<std::ptrdiff_t>(m_width));
 	}
 
 	template <class Type, class Allocator>
@@ -1112,14 +1236,16 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::shuffled()&&
 	{
-		return shuffled(GetDefaultRNG());
+		return std::move(*this).shuffled(GetDefaultRNG());
 	}
 
 	template <class Type, class Allocator>
 	SIV3D_CONCEPT_URBG_
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(URBG&& rbg) const&
 	{
-		return Grid(*this).shuffle(std::forward<URBG>(rbg));
+		Grid result{ *this };
+		result.shuffle(std::forward<URBG>(rbg));
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1207,14 +1333,18 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::sorted() const&
 	{
-		return Grid(*this).sort();
+		Grid result{ *this };
+		result.sort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() const&
 	{
-		return Grid(*this).stable_sorted();
+		Grid result{ *this };
+		result.stable_sort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1239,14 +1369,18 @@ namespace s3d
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) const&
 	{
-		return Grid(*this).sort_by(f);
+		Grid result{ *this };
+		result.sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) const&
 	{
-		return Grid(*this).stable_sort_by(f);
+		Grid result{ *this };
+		result.stable_sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>

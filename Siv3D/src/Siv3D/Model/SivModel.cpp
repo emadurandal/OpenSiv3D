@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -16,18 +16,26 @@
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Renderer3D/IRenderer3D.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
-# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 
 namespace s3d
 {
+	namespace detail
+	{
+		static void CheckEngine()
+		{
+			if (not Siv3DEngine::isActive())
+			{
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"Model");
+				std::exit(EXIT_FAILURE);
+			}
+		}
+	}
+
 	template <>
 	AssetIDWrapper<AssetHandle<Model>>::AssetIDWrapper()
 	{
-		if (not Siv3DEngine::isActive())
-		{
-			FreestandingMessageBox::ShowError(U"`Model` must be initialized after engine-setup. Please fix the C++ code.");
-			std::abort();
-		}
+		detail::CheckEngine();
 	}
 
 	template <>
@@ -47,7 +55,7 @@ namespace s3d
 	Model::Model() {}
 
 	Model::Model(const FilePathView path, const ColorOption colorOption)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Model)->create(path, colorOption)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Model)->create(path, colorOption))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}
@@ -134,5 +142,20 @@ namespace s3d
 	void Model::swap(Model& other) noexcept
 	{
 		m_handle.swap(other.m_handle);
+	}
+
+	bool Model::RegisterDiffuseTextures(const Model& model, const TextureDesc textureDesc)
+	{
+		bool result = true;
+
+		for (const auto& textureName : model.diffuseTextureNames())
+		{
+			if (not TextureAsset::IsRegistered(textureName))
+			{
+				result &= TextureAsset::Register(textureName, textureName, textureDesc);
+			}
+		}
+
+		return result;
 	}
 }

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,11 +11,11 @@
 
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Circular.hpp>
-# include <Siv3D/FormatFloat.hpp>
+# include <Siv3D/FormatInt.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/LineString.hpp>
-# include <Siv3D/Math.hpp>
+# include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
@@ -89,7 +89,7 @@ namespace s3d
 		return quad;
 	}
 
-	Polygon Rect::rounded(double tl, double tr, double br, double bl) const noexcept
+	Polygon Rect::rounded(double tl, double tr, double br, double bl) const
 	{
 		constexpr double epsilon = 0.001;
 
@@ -224,6 +224,16 @@ namespace s3d
 		return Polygon{ vertices };
 	}
 
+	Polygon Rect::chamfered(const double size) const
+	{
+		return RectF{ *this }.chamfered(size);
+	}
+
+	Polygon Rect::chamfered(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.chamfered(tl, tr, br, bl);
+	}
+
 	LineString Rect::outline(const CloseRing closeRing) const
 	{
 		if (closeRing)
@@ -253,7 +263,7 @@ namespace s3d
 		};
 		const double perim = (w * 2 + h * 2);
 
-		distanceFromOrigin = Math::Fmod(distanceFromOrigin, perim) + (distanceFromOrigin < 0 ? perim : 0);
+		distanceFromOrigin = std::fmod(distanceFromOrigin, perim) + (distanceFromOrigin < 0 ? perim : 0);
 		length = Min(length, perim);
 		const double distanceToTarget = (distanceFromOrigin + length);
 
@@ -533,6 +543,30 @@ namespace s3d
 		return *this;
 	}
 
+	const Rect& Rect::draw(const Arg::topLeft_<ColorF> topLeftColor, const Arg::bottomRight_<ColorF> bottomRightColor) const
+	{
+		const Float4 color0 = topLeftColor->toFloat4();
+		const Float4 color2 = bottomRightColor->toFloat4();
+		const Float4 color1 = ((color0 + color2) * 0.5f);
+
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) },
+			{ color0, color1, color2, color1 });
+
+		return *this;
+	}
+
+	const Rect& Rect::draw(const Arg::topRight_<ColorF> topRightColor, const Arg::bottomLeft_<ColorF> bottomLeftColor) const
+	{
+		const Float4 color0 = topRightColor->toFloat4();
+		const Float4 color2 = bottomLeftColor->toFloat4();
+		const Float4 color1 = ((color0 + color2) * 0.5f);
+
+		SIV3D_ENGINE(Renderer2D)->addRect(FloatRect{ x, y, (x + w), (y + h) },
+			{ color1, color0, color1, color2 });
+
+		return *this;
+	}
+
 	const Rect& Rect::drawFrame(const double thickness, const ColorF& color) const
 	{
 		return drawFrame((thickness * 0.5), (thickness * 0.5), color);
@@ -543,8 +577,26 @@ namespace s3d
 		return drawFrame((thickness * 0.5), (thickness * 0.5), innerColor, outerColor);
 	}
 
+	const Rect& Rect::drawFrame(double thickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), topColor, bottomColor);
+	}
+
 	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
 	{
+		if ((w <= 0) || (h <= 0)
+			|| (innerThickness < 0.0) || (outerThickness < 0.0)
+			|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
+		{
+			return *this;
+		}
+
+		if (((w * 0.5) <= innerThickness) || ((h * 0.5) <= innerThickness))
+		{
+			RectF{ *this }.stretched(outerThickness).draw(color);
+			return *this;
+		}
+
 		const Float4 color0 = color.toFloat4();
 
 		SIV3D_ENGINE(Renderer2D)->addRectFrame(
@@ -565,9 +617,19 @@ namespace s3d
 		return *this;
 	}
 
-	const Rect& Rect::drawShadow(const Vec2& offset, const double blurRadius, const double spread, const ColorF& color) const
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
 	{
-		RectF{ *this }.drawShadow(offset, blurRadius, spread, color);
+		SIV3D_ENGINE(Renderer2D)->addRectFrameTB(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			topColor->toFloat4(), bottomColor->toFloat4());
+
+		return *this;
+	}
+
+	const Rect& Rect::drawShadow(const Vec2& offset, const double blurRadius, const double spread, const ColorF& color, const bool fill) const
+	{
+		RectF{ *this }.drawShadow(offset, blurRadius, spread, color, fill);
 
 		return *this;
 	}

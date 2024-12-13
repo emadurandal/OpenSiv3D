@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -42,6 +42,12 @@ namespace s3d
 		return std::dynamic_pointer_cast<Writer>(m_writer);
 	}
 
+	template <class Writer>
+	inline std::shared_ptr<const Writer> Serializer<Writer>::operator ->() const
+	{
+		return std::dynamic_pointer_cast<const Writer>(m_writer);
+	}
+
 	template <class Reader>
 	template <class ...Args>
 	inline Deserializer<Reader>::Deserializer(Args&& ... args)
@@ -69,6 +75,12 @@ namespace s3d
 	inline std::shared_ptr<Reader> Deserializer<Reader>::operator ->()
 	{
 		return std::dynamic_pointer_cast<Reader>(m_reader);
+	}
+
+	template <class Reader>
+	inline std::shared_ptr<const Reader> Deserializer<Reader>::operator ->() const
+	{
+		return std::dynamic_pointer_cast<const Reader>(m_reader);
 	}
 
 	//////////////////////////////////////////////////////
@@ -451,6 +463,16 @@ namespace s3d
 
 	//////////////////////////////////////////////////////
 	//
+	//	Point3D
+	//
+	template <class Archive>
+	inline void SIV3D_SERIALIZE(Archive& archive, Point3D& value)
+	{
+		archive(value.x, value.y, value.z);
+	}
+
+	//////////////////////////////////////////////////////
+	//
 	//	Float3
 	//
 	template <class Archive>
@@ -760,5 +782,23 @@ namespace s3d
 		Blob binary(static_cast<size_t>(binarySize));
 		archive(cereal::binary_data(binary.data(), binary.size()));
 		image = Image{ MemoryReader{ std::move(binary) } };
+	}
+
+	//////////////////////////////////////////////////////
+	//
+	//	TextEditState
+	//
+	template <class Archive>
+	inline void SIV3D_SERIALIZE_SAVE(Archive& archive, const TextEditState& value)
+	{
+		archive(value.text);
+	}
+
+	template <class Archive>
+	inline void SIV3D_SERIALIZE_LOAD(Archive& archive, TextEditState& value)
+	{
+		String text;
+		archive(text);
+		value = TextEditState{ std::move(text) };
 	}
 }

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -15,12 +15,10 @@
 # endif
 # include <functional>
 # include <string>
-# include <unordered_set>
 # include "Common.hpp"
 # include "StringView.hpp"
 # include "Utility.hpp"
 # include "Random.hpp"
-# include "Char.hpp"
 # include "Shuffle.hpp"
 
 namespace s3d
@@ -202,6 +200,7 @@ namespace s3d
 
 		iterator erase(const_iterator first, const_iterator last) noexcept;
 
+		/// @brief 格納している文字列を消去し、空の文字列にします。
 		void clear() noexcept;
 
 		[[nodiscard]]
@@ -262,27 +261,51 @@ namespace s3d
 		[[nodiscard]]
 		value_type operator [](size_t offset) && noexcept;
 
+		/// @brief 先頭に文字を追加します。
+		/// @param ch 追加する文字
 		void push_front(value_type ch);
 
+		/// @brief 末尾に文字を追加します。
+		/// @param ch 追加する文字
 		void push_back(value_type ch);
 
+		/// @brief 先頭の文字を削除します。
 		void pop_front();
 
+		/// @brief 先頭の n 文字を削除します。
+		/// @remark n が現在の文字数より大きい場合は空の文字列にします。
+		/// @param n 削除する文字数
 		void pop_front_N(size_t n);
 
+		/// @brief 末尾の文字を削除します。
 		void pop_back() noexcept;
 
+		/// @brief 末尾の n 文字を削除します。
+		/// @remark n が現在の文字数より大きい場合は空の文字列にします。
+		/// @param n 削除する文字数
 		void pop_back_N(size_t n) noexcept;
 
+		/// @brief 先頭の文字への参照を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 先頭の文字への参照
 		[[nodiscard]]
 		value_type& front() noexcept;
 
+		/// @brief 先頭の文字への参照を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 先頭の文字への参照
 		[[nodiscard]]
 		const value_type& front() const noexcept;
 
+		/// @brief 末尾の文字への参照を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 末尾の文字への参照
 		[[nodiscard]]
 		value_type& back() noexcept;
 
+		/// @brief 末尾の文字への参照を返します。
+		/// @remark 空の文字列に対しては使えません。
+		/// @return 末尾の文字への参照
 		[[nodiscard]]
 		const value_type& back() const noexcept;
 
@@ -301,21 +324,36 @@ namespace s3d
 		[[nodiscard]]
 		const string_type& str() const noexcept;
 
+		/// @brief 文字列の長さ（要素数）を返します。
+		/// @return 文字列の長さ（要素数）
 		[[nodiscard]]
 		size_t length() const noexcept;
 
+		/// @brief 文字列の長さ（要素数）を返します。
+		/// @remark `.length()` と同じです。
+		/// @return 文字列の長さ（要素数）
 		[[nodiscard]]
 		size_t size() const noexcept;
 
+		/// @brief 文字列のデータサイズ（バイト）を返します。
+		/// @remark `sizeof(value_type) * length()` です。
+		/// @return 文字列のデータサイズ（バイト）
 		[[nodiscard]]
 		size_t size_bytes() const noexcept;
 
+		/// @brief 文字列が空であるかを返します。
+		/// @return 文字列が空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool empty() const noexcept;
 
+		/// @brief 文字列が空であるかを返します。
+		/// @remark `empty()` と同じです。
+		/// @return 文字列が空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isEmpty() const noexcept;
 
+		/// @brief 文字列が空でないかを返します。
+		/// @return 文字列が空でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 
@@ -332,6 +370,27 @@ namespace s3d
 		void reserve(size_t newCapacity);
 
 		void swap(String& other) noexcept;
+
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool contains(value_type ch) const;
+
+		/// @brief 指定した文字列を含むかを返します。
+		/// @param ch 検索する文字列
+		/// @return 指定した文字列を含む場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool contains(StringView s) const;
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>* = nullptr>
+		[[nodiscard]]
+		bool contains_if(Fty f) const;
 
 		/// @brief 文字列が指定した文字から始まるかを返します。
 		/// @param ch 検索する文字
@@ -357,24 +416,20 @@ namespace s3d
 		[[nodiscard]]
 		bool ends_with(StringView s) const;
 
-		/// @brief 
-		/// @param offset 
-		/// @param count 
-		/// @return 
+		/// @brief 部分文字列を取得します。
+		/// @param offset 開始インデックス
+		/// @param count 取得する文字数。末尾までの場合 npos
+		/// @return 部分文字列
 		[[nodiscard]]
 		String substr(size_t offset = 0, size_t count = npos) const;
 
-		/// @brief 
-		/// @param offset 
-		/// @param count 
-		/// @return 
+		/// @brief 部分文字列へのビューを取得します。
+		/// @param offset 開始インデックス
+		/// @param count 取得する文字数。末尾までの場合 npos
+		/// @return 部分文字列へのビュー
 		[[nodiscard]]
 		StringView substrView(size_t offset = 0, size_t count = npos) const&;
 
-		/// @brief 
-		/// @param offset 
-		/// @param count 
-		/// @return 
 		[[nodiscard]]
 		StringView substrView(size_t offset = 0, size_t count = npos)&& = delete;
 
@@ -521,6 +576,7 @@ namespace s3d
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
 		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
+		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>* = nullptr>
 		[[nodiscard]]
 		bool any(Fty f = Identity) const;
@@ -538,6 +594,32 @@ namespace s3d
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String capitalized()&&;
+
+		/// @brief 文字列の要素を 1 つランダムに返します。
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
+
+		/// @brief 文字列の要素を 1 つランダムに返します。
+		/// @return 文字列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
+
+		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
+		/// @tparam URBG 使用する乱数エンジンの型
+		/// @param rbg 使用する乱数エンジン
+		/// @return 文字列からランダムに選ばれた要素への参照
+		SIV3D_CONCEPT_URBG
+		[[nodiscard]]
+		value_type& choice(URBG&& rbg);
+
+		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
+		/// @tparam URBG 使用する乱数エンジンの型
+		/// @param rbg 使用する乱数エンジン
+		/// @return 文字列からランダムに選ばれた要素への参照
+		SIV3D_CONCEPT_URBG
+		[[nodiscard]]
+		const value_type& choice(URBG&& rbg) const;
 
 		/// @brief 指定した値と等しい要素の個数を返します。
 		/// @param ch 検索する値
@@ -622,19 +704,21 @@ namespace s3d
 		/// @brief 指定した値と等しい要素があるかを返します。
 		/// @param value 検索する値
 		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		/// @remark `.contains(ch)` と同じです。
 		[[nodiscard]]
 		bool includes(value_type ch) const;
 
 		/// @brief 指定した文字列を含むかを返します。
 		/// @param ch 検索する文字列
 		/// @return 指定した文字列を含む場合 true, それ以外の場合は false
+		/// @remark `.contains(s)` と同じです。
 		[[nodiscard]]
 		bool includes(StringView s) const;
 
 		/// @brief 指定した条件を満たす要素があるかを返します。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @remark `.any(f)` と同じです。
+		/// @remark `.contains_if(f)` および `.any(f)` と同じです。
 		/// @return 条件を満たす要素が 1 つでもあれば true, 俺以外の場合は false
 		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>* = nullptr>
 		[[nodiscard]]
@@ -751,7 +835,13 @@ namespace s3d
 		/// @param s 除去対象の文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String removed(StringView s) const;
+		String removed(StringView s) const&;
+
+		/// @brief 指定した文字列を除去した新しい文字列を返します。
+		/// @param s 除去対象の文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String removed(StringView s) &&;
 
 		/// @brief 指定したインデックスにある要素を文字列から削除します。
 		/// @param index インデックス
@@ -1105,7 +1195,12 @@ namespace s3d
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String stable_uniqued() const;
+		String stable_uniqued() const&;
+
+		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String stable_uniqued() &&;
 
 		/// @brief 文字列をソートし、重複する文字を削除します。
 		/// @return *this
@@ -1147,15 +1242,15 @@ namespace s3d
 		/// @return *this
 		String& xml_escape();
 
-		[[nodiscard]]
 		/// @brief  XML エスケープした文字列を返します。
-		/// @remark&quot;, \, &amp;, &gt;, &lt; などのエスケープを行います
+		/// @remark &quot;, \, &amp;, &gt;, &lt; などのエスケープを行います
 		/// @return 新しい文字列
+		[[nodiscard]]
 		String xml_escaped() const;
 
 		friend bool operator ==(const String& lhs, const value_type* rhs);
 
-#if __cpp_impl_three_way_comparison
+#if __cpp_lib_three_way_comparison
 
 		bool operator ==(const String& rhs) const noexcept = default;
 
@@ -1255,19 +1350,19 @@ namespace s3d
 	};
 
 	[[nodiscard]]
-	inline String operator +(const String::value_type lhs, StringView rhs);
+	String operator +(const String::value_type lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(const String::value_type* lhs, StringView rhs);
+	String operator +(const String::value_type* lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, const String::value_type* rhs);
+	String operator +(StringView lhs, const String::value_type* rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, StringView rhs);
+	String operator +(StringView lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, const String::value_type rhs);
+	String operator +(StringView lhs, const String::value_type rhs);
 
 	inline void swap(String& a, String& b) noexcept;
 

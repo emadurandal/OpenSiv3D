@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -38,6 +38,8 @@ namespace s3d
 		Audio::IDType createStreamingNonLoop(FilePathView path) override;
 
 		Audio::IDType createStreamingLoop(FilePathView path, uint64 loopBegin) override;
+
+		Audio::IDType createDynamic(const std::shared_ptr<IAudioStream>& pAudioStream, Arg::sampleRate_<uint32> sampleRate) override;
 
 		void release(Audio::IDType handleID) override;
 
@@ -179,6 +181,8 @@ namespace s3d
 		void stopKlatt() override;
 
 	private:
+
+		static constexpr uint32 MaxActiveVoiceCount = 72; // hard limit: 1024
 
 		std::unique_ptr<SoLoud::Soloud> m_soloud;
 		

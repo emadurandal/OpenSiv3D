@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -62,7 +62,7 @@ namespace s3d
 	{
 		constexpr char TypeName[] = "Float3";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectProperty(TypeName, "float x", asOFFSET(Float3, x)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float y", asOFFSET(Float3, y)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float z", asOFFSET(Float3, z)); assert(r >= 0);
@@ -114,6 +114,13 @@ namespace s3d
 		r = engine->RegisterObjectMethod(TypeName, "float minComponent() const", asMETHODPR(Float3, minComponent, () const noexcept, float), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "float maxComponent() const", asMETHODPR(Float3, maxComponent, () const noexcept, float), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "void clear()", asMETHODPR(Float3, clear, () noexcept, void), asCALL_THISCALL); assert(r >= 0);
+
+		//
+		//	with
+		//
+		r = engine->RegisterObjectMethod(TypeName, "Float3 withX(float) const", asMETHODPR(Float3, withX, (float) const noexcept, Float3), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Float3 withY(float) const", asMETHODPR(Float3, withY, (float) const noexcept, Float3), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "Float3 withZ(float) const", asMETHODPR(Float3, withZ, (float) const noexcept, Float3), asCALL_THISCALL); assert(r >= 0);
 
 		//
 		//	set

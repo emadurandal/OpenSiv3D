@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -17,6 +17,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EnvironmentVariable.hpp>
 # include <Siv3D/INI.hpp>
+# include <Siv3D/SimpleHTTP.hpp>
 
 namespace s3d
 {
@@ -274,6 +275,11 @@ namespace s3d
 			return U"/";
 		}
 
+		FilePath PathAppend(const FilePathView lhs, const FilePathView rhs)
+		{
+			return FilePath{ (detail::ToPath(lhs) / detail::ToPath(rhs)).u32string() }.replace(U'\\', U'/');
+		}
+
 		bool IsEmptyDirectory(const FilePathView path)
 		{
 			if (not path) SIV3D_UNLIKELY
@@ -496,7 +502,7 @@ namespace s3d
 		{
 			if (not path)
 			{
-				return false;
+				return true;
 			}
 
 			if (IsResourcePath(path))
